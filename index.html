@@ -1,0 +1,3132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDEU CertiChain | Blockchain Academic Certificate Verification System</title>
+  <meta name="description" content="Decentralized, tamper-proof academic credential notarization and verification platform for Pandit Deendayal Energy University (PDEU, Gandhinagar) powered by blockchain, SHA-256 cryptographic hashing, and Merkle Trees.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- External Helper Libraries (QR Code & PDF) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- EMBEDDED COMPLETE DESIGN SYSTEM & STYLES (Self-Contained & Guaranteed To Load) -->
+  <style>
+    /* ==========================================================================
+       1. Core Theme & Design System
+       ========================================================================== */
+    :root {
+      --bg-primary: #070b14;
+      --bg-secondary: #0d1322;
+      --bg-card: rgba(16, 24, 43, 0.85);
+      --bg-card-hover: rgba(22, 33, 58, 0.95);
+      --bg-glass: rgba(15, 23, 42, 0.75);
+
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(0, 242, 254, 0.25);
+      --border-active: #00f2fe;
+
+      --accent-cyan: #00f2fe;
+      --accent-blue: #4facfe;
+      --accent-emerald: #10b981;
+      --accent-gold: #f59e0b;
+      --accent-purple: #8b5cf6;
+      --accent-rose: #f43f5e;
+      --accent-danger: #ef4444;
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-dim: #475569;
+
+      --font-sans: 'Outfit', 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-serif: 'Cinzel', serif;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+
+      --shadow-glow-cyan: 0 0 25px rgba(0, 242, 254, 0.2);
+      --shadow-glow-gold: 0 0 25px rgba(245, 158, 11, 0.25);
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 60%);
+      background-attachment: fixed;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+    a:hover {
+      text-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    .font-mono { font-family: var(--font-mono); }
+    .font-serif { font-family: var(--font-serif); }
+    .font-signature {
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.8rem;
+      color: #1e293b;
+      transform: rotate(-3deg);
+    }
+
+    .text-cyan { color: var(--accent-cyan) !important; }
+    .text-gold { color: var(--accent-gold) !important; }
+    .text-emerald { color: var(--accent-emerald) !important; }
+    .text-danger { color: var(--accent-danger) !important; }
+    .text-purple { color: var(--accent-purple) !important; }
+    .text-muted { color: var(--text-muted) !important; }
+    .text-center { text-align: center; }
+    .text-start { text-align: left; }
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.85rem; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+
+    /* ==========================================================================
+       2. Navbar & Role Switcher
+       ========================================================================== */
+    .app-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 11, 20, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon-wrapper {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.35);
+    }
+
+    .brand-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 20px;
+      color: var(--accent-gold);
+      -webkit-text-fill-color: var(--accent-gold);
+    }
+
+    .nav-role-switcher {
+      display: flex;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-color);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      gap: 4px;
+    }
+
+    .nav-tab-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-tab-item:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-tab-item.active {
+      color: #070b14;
+      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+      font-weight: 700;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+    }
+
+    .nav-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chain-status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 24, 43, 0.8);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulseGreen 2s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* ==========================================================================
+       3. Main Layout & Cards
+       ========================================================================== */
+    .app-main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .app-tab-pane {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .app-tab-pane.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card-glass {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-glass);
+      transition: var(--transition-smooth);
+    }
+
+    .card-glass:hover {
+      border-color: rgba(245, 158, 11, 0.25);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .btn-sm { padding: 6px 14px; font-size: 0.82rem; }
+
+    .btn-primary-glass {
+      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      color: #070b14;
+      font-weight: 700;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+    }
+    .btn-primary-glass:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(0, 242, 254, 0.45);
+    }
+
+    .btn-gold-glass {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #070b14;
+      font-weight: 700;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+    }
+    .btn-gold-glass:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-outline-glass {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+    .btn-outline-glass:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    .btn-danger-glass {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+    }
+    .btn-danger-glass:hover {
+      background: #ef4444;
+      color: white;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-valid {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--accent-emerald);
+    }
+
+    .badge-revoked {
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: var(--accent-danger);
+    }
+
+    .bg-cyan { background-color: rgba(0, 242, 254, 0.2); color: var(--accent-cyan); }
+    .bg-gold { background-color: rgba(245, 158, 11, 0.2); color: var(--accent-gold); }
+    .bg-purple { background-color: rgba(139, 92, 246, 0.2); color: var(--accent-purple); }
+    .bg-primary { background-color: rgba(79, 172, 254, 0.2); color: var(--accent-blue); }
+
+    /* Form Controls */
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .form-control, .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(10, 15, 29, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      transition: var(--transition-smooth);
+    }
+
+    .form-control:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    /* Grid & Helpers */
+    .row { display: flex; flex-wrap: wrap; margin: -0.75rem; }
+    .col-12 { width: 100%; padding: 0.75rem; }
+    .col-md-3 { width: 25%; padding: 0.75rem; }
+    .col-md-4 { width: 33.333%; padding: 0.75rem; }
+    .col-md-6 { width: 50%; padding: 0.75rem; }
+    .col-md-7 { width: 58.333%; padding: 0.75rem; }
+    .col-md-8 { width: 66.666%; padding: 0.75rem; }
+    .col-md-5 { width: 41.666%; padding: 0.75rem; }
+    .d-flex { display: flex; }
+    .justify-content-between { justify-content: space-between; }
+    .justify-content-center { justify-content: center; }
+    .justify-content-end { justify-content: flex-end; }
+    .align-items-center { align-items: center; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .m-0 { margin: 0; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-1 { margin-bottom: 4px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .p-2 { padding: 8px; }
+    .p-3 { padding: 12px; }
+    .p-4 { padding: 16px; }
+    .p-5 { padding: 24px; }
+    .py-3 { padding-top: 12px; padding-bottom: 12px; }
+    .py-4 { padding-top: 16px; padding-bottom: 16px; }
+    .py-5 { padding-top: 24px; padding-bottom: 24px; }
+    .w-100 { width: 100%; }
+
+    /* Tables */
+    .custom-table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background: rgba(11, 17, 33, 0.7);
+    }
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .custom-table th {
+      background: rgba(15, 23, 42, 0.95);
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      letter-spacing: 0.05em;
+    }
+    .custom-table td {
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-primary);
+    }
+    .custom-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+    .table-row-revoked td { opacity: 0.7; background: rgba(239, 68, 68, 0.04); }
+    .table-actions { display: flex; gap: 6px; }
+    .btn-action-sm {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .btn-action-sm:hover { background: rgba(0, 242, 254, 0.15); border-color: var(--accent-cyan); }
+    .btn-action-revoke:hover { background: rgba(239, 68, 68, 0.2); border-color: var(--accent-danger); }
+
+    /* ==========================================================================
+       4. Verifier Hub & Tamper Sandbox
+       ========================================================================== */
+    .verifier-hero {
+      text-align: center;
+      max-width: 820px;
+      margin: 0 auto 2.5rem auto;
+    }
+    .verifier-hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 30%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .verifier-hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+    }
+
+    .verify-modes-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-glass);
+    }
+    .verify-modes-nav {
+      display: flex;
+      background: rgba(10, 15, 29, 0.9);
+      padding: 6px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      gap: 6px;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+    .verify-mode-tab {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .verify-mode-tab:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .verify-mode-tab.active {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+
+    .verify-mode-pane { display: none; }
+    .verify-mode-pane.active { display: block; animation: fadeIn 0.25s ease; }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .search-input-group { display: flex; gap: 10px; }
+    .search-input-lg {
+      flex: 1;
+      padding: 14px 18px;
+      font-size: 1.05rem;
+      background: rgba(8, 12, 22, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+    .demo-pills-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .demo-pills-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .demo-hash-pill {
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .demo-hash-pill:hover {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+    .pill-revoked:hover {
+      background: rgba(239, 68, 68, 0.15) !important;
+      border-color: var(--accent-danger) !important;
+      color: var(--accent-danger) !important;
+    }
+
+    .dropzone-box {
+      border: 2px dashed rgba(245, 158, 11, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      text-align: center;
+      background: rgba(8, 14, 28, 0.5);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .dropzone-box:hover, .dropzone-box.drag-over {
+      border-color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.05);
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
+    }
+    .dropzone-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+
+    /* Verification Report */
+    .verification-report-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: var(--shadow-glass);
+      animation: slideUp 0.35s ease;
+    }
+    @keyframes slideUp {
+      0% { transform: translateY(20px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .report-valid {
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
+    }
+    .report-revoked {
+      border-color: rgba(239, 68, 68, 0.4);
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.15);
+    }
+    .report-invalid {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .report-status-badge-lg {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 24px;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+    }
+    .badge-lg-valid {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .badge-lg-valid .status-icon { font-size: 2.2rem; color: var(--accent-emerald); }
+    .badge-lg-valid .status-headline { font-size: 1.35rem; font-weight: 800; color: var(--accent-emerald); display: block; }
+    .badge-lg-revoked {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .badge-lg-revoked .status-icon { font-size: 2.2rem; color: var(--accent-danger); }
+    .badge-lg-revoked .status-headline { font-size: 1.35rem; font-weight: 800; color: var(--accent-danger); display: block; }
+
+    .revocation-banner-alert {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 1.5rem;
+    }
+    .revocation-reason-text { font-size: 1rem; font-weight: 600; color: #fca5a5; margin-bottom: 4px; }
+    .revocation-timestamp-text { font-size: 0.8rem; color: #f87171; font-family: var(--font-mono); }
+
+    .audit-trail-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary); }
+    .audit-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 1.75rem;
+    }
+    .audit-step-card {
+      background: rgba(10, 15, 29, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+    .step-passed { border-left: 4px solid var(--accent-emerald); }
+    .step-failed { border-left: 4px solid var(--accent-danger); }
+    .step-header { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; margin-bottom: 4px; }
+    .step-desc { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 8px; }
+    .step-code { font-size: 0.7rem; padding: 3px 8px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; color: var(--accent-cyan); word-break: break-all; }
+
+    .verified-details-card {
+      background: rgba(10, 15, 29, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+    }
+    .detail-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; margin-bottom: 2px; }
+
+    /* Tamper Sandbox */
+    .tamper-sandbox-box {
+      background: linear-gradient(135deg, rgba(23, 15, 38, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 0 35px rgba(236, 72, 153, 0.1);
+    }
+    .tamper-sandbox-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1rem;
+    }
+    .tamper-result-alert { padding: 18px; border-radius: var(--radius-md); margin-top: 1.5rem; }
+    .alert-genuine { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); }
+    .alert-tampered { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); animation: shakeAlert 0.4s ease; }
+    @keyframes shakeAlert {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    /* ==========================================================================
+       5. Certificate Paper & Parchment Styles
+       ========================================================================== */
+    .cert-preview-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      background: rgba(5, 9, 17, 0.6);
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--border-color);
+      overflow: hidden;
+    }
+
+    .cert-paper {
+      position: relative;
+      width: 100%;
+      max-width: 820px;
+      min-height: 570px;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 4px;
+      padding: 36px 46px 20px 46px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .cert-watermark-pattern {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: radial-gradient(#0f172a 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      z-index: 1;
+    }
+
+    .cert-guilloche-border {
+      position: absolute;
+      top: 12px; left: 12px; right: 12px; bottom: 12px;
+      pointer-events: none;
+      border: 2px double #b45309;
+      outline: 6px solid #fef3c7;
+      z-index: 2;
+    }
+
+    .cert-paper.pdeu-energy {
+      background: radial-gradient(circle at center, #ffffff 0%, #fffbf2 70%, #fdf5e6 100%);
+      border: 12px solid #0b2545;
+      box-shadow: 0 0 0 3px #f59e0b, 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
+    .cert-paper.pdeu-energy .cert-guilloche-border {
+      border: 3px double #d97706;
+      outline: 6px solid #fef3c7;
+    }
+    .cert-paper.pdeu-energy .cert-issuer-name {
+      color: #0b2545;
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+    .cert-paper.pdeu-energy .cert-issuer-sub {
+      color: #b45309;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .cert-paper.ivy-gold {
+      background: radial-gradient(circle at center, #ffffff 0%, #fffdfa 70%, #fef8ee 100%);
+      border: 10px solid #d97706;
+    }
+    .cert-paper.modern-tech {
+      background: radial-gradient(circle at center, #ffffff 0%, #f0f9ff 70%, #e0f2fe 100%);
+      border: 10px solid #0284c7;
+    }
+    .cert-paper.royal-classic {
+      background: radial-gradient(circle at center, #ffffff 0%, #f8fafc 70%, #ede9fe 100%);
+      border: 10px solid #6d28d9;
+    }
+
+    .cert-revocation-stamp {
+      position: absolute;
+      top: 42%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-18deg);
+      border: 6px solid #dc2626;
+      color: #dc2626;
+      padding: 14px 38px;
+      border-radius: 8px;
+      text-align: center;
+      z-index: 100;
+      background: rgba(254, 226, 226, 0.9);
+      box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+      pointer-events: none;
+    }
+    .cert-revocation-stamp span {
+      display: block;
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      font-family: 'Cinzel', serif;
+    }
+    .cert-revocation-stamp small {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .cert-header {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .cert-logo-badge { font-size: 2.4rem; margin-bottom: 2px; }
+    .cert-issuer-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .cert-issuer-sub {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #b45309;
+    }
+    .cert-issuer-did {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: #64748b;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    .cert-title-section {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      margin: 8px 0;
+    }
+    .cert-pretitle {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .cert-student-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.01em;
+      margin: 4px 0 2px 0;
+      border-bottom: 2px solid #cbd5e1;
+      display: inline-block;
+      padding: 0 24px 4px 24px;
+    }
+    .cert-student-id {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .cert-degree-text {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: #475569;
+    }
+    .cert-degree-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #0b2545;
+      margin: 4px 0;
+    }
+    .cert-major-name { font-size: 0.92rem; color: #334155; }
+    .cert-honors-text { font-size: 0.84rem; font-style: italic; color: #64748b; margin: 4px 0; }
+    .cert-gpa-badge {
+      display: inline-block;
+      font-size: 0.82rem;
+      background: #f1f5f9;
+      padding: 2px 14px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      margin-top: 4px;
+    }
+
+    .cert-footer {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 12px;
+      padding-bottom: 8px;
+    }
+    .cert-signatures { display: flex; gap: 16px; }
+    .cert-signature-line {
+      text-align: center;
+      border-top: 1px solid #94a3b8;
+      padding-top: 4px;
+      min-width: 140px;
+    }
+    .cert-sign-title {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+    }
+
+    .cert-seal-wrapper { text-align: center; }
+    .cert-seal-metallic {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fef08a 0%, #eab308 50%, #a16207 100%);
+      padding: 4px;
+      box-shadow: 0 4px 10px rgba(161, 98, 7, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .seal-inner-circle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px dashed #78350f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #78350f;
+    }
+    .seal-crest { font-size: 1.3rem; }
+    .seal-text-top, .seal-text-bottom {
+      font-size: 0.38rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    .cert-qr-wrapper { text-align: center; }
+    .cert-qr-code {
+      width: 80px;
+      height: 80px;
+      background: white;
+      padding: 3px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    .cert-qr-hint {
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .cert-crypto-strip {
+      position: relative;
+      z-index: 5;
+      background: #0b2545;
+      color: #94a3b8;
+      margin: 8px -46px -20px -46px;
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      border-top: 2px solid #f59e0b;
+    }
+    .crypto-strip-item { display: flex; gap: 4px; align-items: center; }
+    .strip-label { font-weight: 700; color: #cbd5e1; }
+    .strip-val { color: #38bdf8; }
+
+    /* Student Passport Cards */
+    .student-passport-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .credential-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-glass);
+      transition: var(--transition-smooth);
+    }
+    .credential-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 158, 11, 0.35);
+      box-shadow: var(--shadow-glow-gold);
+    }
+    .credential-card-revoked { border-color: rgba(239, 68, 68, 0.4) !important; }
+    .cred-institution-logo { font-size: 2.2rem; }
+    .cred-institution-name { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 2px; }
+    .cred-degree-title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); }
+    .cred-meta-row { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem; }
+    .meta-label { color: var(--text-muted); }
+    .meta-val { font-weight: 600; }
+    .cred-blockchain-proof-box {
+      background: rgba(8, 12, 22, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-top: 14px;
+    }
+    .proof-label { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); }
+    .cred-actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    /* Explorer */
+    .explorer-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .metric-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .metric-val { font-size: 1.6rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+    .metric-name { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+    .blocks-feed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .block-card {
+      background: rgba(11, 17, 33, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .block-card:hover {
+      border-color: var(--accent-gold);
+      transform: translateY(-2px);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
+    }
+    .block-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .block-num { font-weight: 700; color: var(--accent-gold); font-size: 0.95rem; }
+    .block-meta-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
+    .block-hash-preview { margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+    .solidity-code-box {
+      background: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #38bdf8;
+      max-height: 450px;
+      overflow-y: auto;
+    }
+
+    /* Modals */
+    .custom-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .custom-modal.active { display: flex; }
+    .modal-backdrop-dismiss {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(8px);
+    }
+    .modal-dialog-content {
+      position: relative;
+      z-index: 10;
+      background: #0d1322;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius-lg);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), var(--shadow-glow-gold);
+      animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { font-size: 1.2rem; font-weight: 700; }
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .modal-close-btn:hover { color: var(--accent-danger); }
+    .modal-body { padding: 1.75rem; }
+    .modal-footer {
+      padding: 1.25rem 1.75rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Toasts */
+    #toast-container {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast-item {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      animation: toastSlideIn 0.3s ease;
+      max-width: 400px;
+    }
+    .toast-success { border-left: 4px solid var(--accent-emerald); }
+    .toast-info { border-left: 4px solid var(--accent-gold); }
+    .toast-warning { border-left: 4px solid var(--accent-gold); }
+    .toast-error { border-left: 4px solid var(--accent-danger); }
+    @keyframes toastSlideIn {
+      0% { transform: translateX(100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    .toast-fade-out { opacity: 0; transform: translateX(100%); transition: opacity 0.3s ease, transform 0.3s ease; }
+
+    /* Confetti */
+    .confetti-piece {
+      position: fixed;
+      width: 10px; height: 10px;
+      z-index: 99999;
+      pointer-events: none;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    @media (max-width: 992px) {
+      .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8 { width: 100%; }
+      .app-navbar { flex-direction: column; gap: 12px; padding: 1rem; }
+      .nav-role-switcher { width: 100%; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="app-navbar">
+    <div class="nav-brand">
+      <div class="brand-icon-wrapper">⚡</div>
+      <div class="brand-name">
+        PDEU CertiChain
+        <span class="brand-badge">L1 MAINNET</span>
+      </div>
+    </div>
+
+    <!-- Role Switcher Tabs -->
+    <div class="nav-role-switcher" role="tablist">
+      <button class="nav-tab-item active" data-tab="verifier" id="tab-btn-verifier">
+        <span>🔍</span> Public Verifier
+      </button>
+      <button class="nav-tab-item" data-tab="issuer" id="tab-btn-issuer">
+        <span>🏛️</span> University Issuer
+      </button>
+      <button class="nav-tab-item" data-tab="student" id="tab-btn-student">
+        <span>🎓</span> Student Locker
+      </button>
+      <button class="nav-tab-item" data-tab="explorer" id="tab-btn-explorer">
+        <span>🧊</span> Blockchain Explorer
+      </button>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="nav-right-actions">
+      <div class="chain-status-indicator" title="Connected to PDEU CertiChain Sovereign Node">
+        <span class="pulse-dot"></span>
+        <span id="header-block-height">Block #4</span>
+      </div>
+      <button class="btn btn-outline-glass btn-sm" id="sound-toggle-btn">🔊 Sound: ON</button>
+      <button class="btn btn-gold-glass btn-sm" id="connect-wallet-btn">🦊 Connect Wallet</button>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="app-main-container">
+
+    <!-- ====================================================================
+         TAB 1: PUBLIC VERIFIER / EMPLOYER PORTAL
+         ==================================================================== -->
+    <section class="app-tab-pane active" id="tab-verifier">
+      <div class="verifier-hero">
+        <h1 class="verifier-hero-title">Pandit Deendayal Energy University (PDEU)</h1>
+        <p class="verifier-hero-subtitle">
+          Official Blockchain Credential Verification Portal. Instantly verify B.Tech, M.Tech, Ph.D. and MBA degrees issued by Pandit Deendayal Energy University (Gandhinagar) against the immutable ledger.
+        </p>
+      </div>
+
+      <!-- 4-Way Verification Hub -->
+      <div class="verify-modes-container">
+        <div class="verify-modes-nav">
+          <button class="verify-mode-tab active" data-mode="search">
+            <span>🔎</span> Search Serial ID / Hash
+          </button>
+          <button class="verify-mode-tab" data-mode="pdf">
+            <span>📄</span> Upload PDF / File
+          </button>
+          <button class="verify-mode-tab" data-mode="qr">
+            <span>📷</span> Scan QR Code
+          </button>
+          <button class="verify-mode-tab" data-mode="json">
+            <span>📜</span> W3C VC JSON Proof
+          </button>
+        </div>
+
+        <!-- Mode 1: Search by Hash / Cert ID -->
+        <div class="verify-mode-pane active" id="pane-search">
+          <form id="verifier-search-form">
+            <div class="search-input-group">
+              <input type="text" id="verifier-search-input" class="search-input-lg" 
+                placeholder="Enter PDEU Serial ID (e.g. PDEU-2025-CE-1042) or SHA-256 Hash (0x...)" autocomplete="off">
+              <button type="submit" class="btn btn-gold-glass" style="min-width: 140px;">
+                <span>⚡ Verify Now</span>
+              </button>
+            </div>
+          </form>
+
+          <div class="demo-pills-row">
+            <span class="demo-pills-label">Quick Test PDEU Demo Degrees:</span>
+            <button class="demo-hash-pill" data-query="PDEU-2025-CE-1042">⚡ Aarav Patel (B.Tech Computer Engg - 9.62 CGPA)</button>
+            <button class="demo-hash-pill" data-query="PDEU-2025-PETRO-2091">🛢️ Diya Sharma (B.Tech Petroleum Engg - 9.45 CGPA)</button>
+            <button class="demo-hash-pill" data-query="PDEU-2024-RE-3054">☀️ Rohan Mehta (M.Tech Renewable Energy - Gold Medal)</button>
+            <button class="demo-hash-pill pill-revoked" data-query="PDEU-2024-ICT-4412">⚠️ Karan Joshi (Revoked Demo)</button>
+          </div>
+        </div>
+
+        <!-- Mode 2: Drag & Drop PDF -->
+        <div class="verify-mode-pane" id="pane-pdf">
+          <div class="dropzone-box" id="pdf-drop-zone">
+            <div class="dropzone-icon">📁</div>
+            <h4 class="text-white">Drag & Drop PDEU Academic Certificate PDF or Document</h4>
+            <p class="text-muted">CertiChain computes the client-side SHA-256 fingerprint in zero-knowledge and queries the blockchain registry.</p>
+            <input type="file" id="pdf-file-input" style="display: none;" accept=".pdf,.png,.jpg,.jpeg,.json">
+            <button type="button" class="btn btn-outline-glass btn-sm mt-3">Browse Local Files</button>
+            <div id="pdf-upload-status" class="mt-3 text-gold font-mono text-sm"></div>
+          </div>
+        </div>
+
+        <!-- Mode 3: QR Code Scanner -->
+        <div class="verify-mode-pane" id="pane-qr">
+          <div class="camera-scanner-wrapper text-center">
+            <div id="camera-scanner-view">
+              <div class="scanner-placeholder py-4 text-muted">
+                Camera is currently offline. Click below to start live optical QR scanning.
+              </div>
+            </div>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+              <button type="button" class="btn btn-gold-glass" id="toggle-camera-scanner-btn">
+                📷 Start Live Camera Scanner
+              </button>
+              <label class="btn btn-outline-glass m-0" style="cursor: pointer;">
+                🖼️ Upload QR Image
+                <input type="file" id="qr-image-input" accept="image/*" style="display: none;">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode 4: W3C VC JSON -->
+        <div class="verify-mode-pane" id="pane-json">
+          <div class="p-3 text-center">
+            <h4 class="text-white mb-2">Upload W3C Standard Verifiable Credential (JSON-LD)</h4>
+            <p class="text-muted">Validates ECDSA asymmetric signature against PDEU university DID public key.</p>
+            <label class="btn btn-gold-glass mt-3" style="cursor: pointer;">
+              📂 Choose JSON Credential File
+              <input type="file" id="vc-json-input" accept=".json" style="display: none;" onchange="window.verifierModule.handleFileUpload(this.files[0])">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification Report Result -->
+      <div id="verification-report-section" style="display: none;">
+        <!-- Dynamically rendered by verifier.js -->
+      </div>
+
+      <!-- Interactive Tamper Testing Sandbox -->
+      <div id="tamper-sandbox-section" style="display: none;">
+        <div class="tamper-sandbox-box">
+          <div class="tamper-sandbox-header">
+            <div>
+              <h3 class="text-white d-flex align-items-center gap-2">
+                <span>🧪</span> Interactive Cryptographic Tamper Testing Sandbox
+              </h3>
+              <p class="text-muted text-sm m-0">Modify any student field below to witness why blockchain cryptography prevents degree forgery.</p>
+            </div>
+            <div id="tamper-match-status"></div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Student Name</label>
+              <input type="text" id="tamper-student-name" class="form-control">
+              <small class="text-muted">Original: <span id="tamper-original-name" class="font-semibold text-white"></span></small>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">CGPA / Grade</label>
+              <input type="text" id="tamper-cgpa" class="form-control">
+              <small class="text-muted">Original: <span id="tamper-original-gpa" class="font-semibold text-white"></span></small>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Degree Title</label>
+              <input type="text" id="tamper-degree" class="form-control">
+              <small class="text-muted">Original: <span id="tamper-original-degree" class="font-semibold text-white"></span></small>
+            </div>
+          </div>
+
+          <!-- Real-Time Hash Comparison -->
+          <div class="card card-glass p-3 mt-3">
+            <div class="d-flex justify-content-between font-mono text-xs mb-2">
+              <span class="text-muted">BLOCKCHAIN IMMUTABLE HASH:</span>
+              <span id="tamper-original-hash" class="text-emerald font-bold"></span>
+            </div>
+            <div class="d-flex justify-content-between font-mono text-xs">
+              <span class="text-muted">RECALCULATED TAMPERED HASH:</span>
+              <span id="tamper-computed-hash" class="text-cyan font-bold"></span>
+            </div>
+          </div>
+
+          <div id="tamper-result-box" class="tamper-result-alert alert-genuine">
+            <!-- Dynamic tamper alert -->
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button class="btn btn-outline-glass btn-sm" id="reset-tamper-btn">🔄 Reset to Original</button>
+            <button class="btn btn-gold-glass btn-sm" id="run-tamper-check-btn">⚡ Re-calculate Proof</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 2: UNIVERSITY / ISSUER PORTAL
+         ==================================================================== -->
+    <section class="app-tab-pane" id="tab-issuer">
+      
+      <!-- Issuer Profile Header -->
+      <div class="card card-glass mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <span class="fs-1" id="issuer-inst-logo" style="font-size: 2.5rem;">⚡</span>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <h3 class="text-white m-0" id="issuer-inst-name">Pandit Deendayal Energy University (PDEU)</h3>
+                <span class="badge badge-valid" id="issuer-inst-badge">NAAC "A++" ACCREDITED</span>
+              </div>
+              <div class="d-flex gap-3 text-xs text-muted font-mono mt-1">
+                <span>DID: <strong class="text-gold" id="issuer-inst-did">did:certichain:pdeu.ac.in</strong></span>
+                <span>Address: <strong class="text-muted" id="issuer-inst-address">0x78D6...2084</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-3">
+            <div>
+              <label class="form-label mb-1">Active University Node:</label>
+              <select id="issuer-institution-select" class="form-select" style="min-width: 300px;"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Issuer Metric Counters -->
+        <div class="row g-3 mt-3 pt-3 border-top border-secondary">
+          <div class="col-md-4">
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Total Certificates Issued:</span>
+              <strong class="text-white font-mono" id="issuer-stat-total">0</strong>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Active In-Standing:</span>
+              <strong class="text-emerald font-mono" id="issuer-stat-active">0</strong>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Revoked Records:</span>
+              <strong class="text-danger font-mono" id="issuer-stat-revoked">0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issuance Section: Form & Live Preview -->
+      <div class="row">
+        <!-- Left: Issuance Form & Batch -->
+        <div class="col-md-6">
+          <div class="card card-glass">
+            <h4 class="text-white mb-3">📝 Issue New PDEU Academic Degree</h4>
+            
+            <form id="single-issue-form">
+              <div class="row g-2">
+                <div class="col-md-6 form-group">
+                  <label class="form-label">Certificate Serial ID</label>
+                  <input type="text" id="cert-id" class="form-control font-mono" required>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label class="form-label">Student Full Name</label>
+                  <input type="text" id="cert-student-name" class="form-control" placeholder="e.g. Aarav Jayesh Patel" required>
+                </div>
+              </div>
+
+              <div class="row g-2">
+                <div class="col-md-6 form-group">
+                  <label class="form-label">Enrollment / Roll No</label>
+                  <input type="text" id="cert-student-id" class="form-control font-mono" placeholder="e.g. PDEU-21BCE042" required>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label class="form-label">Graduation Date</label>
+                  <input type="date" id="cert-grad-date" class="form-control" value="2026-05-28" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Degree Conferred</label>
+                <input type="text" id="cert-degree" class="form-control" placeholder="e.g. Bachelor of Technology in Computer Engineering" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">School & Department</label>
+                <input type="text" id="cert-major" class="form-control" placeholder="e.g. School of Technology • Artificial Intelligence & Blockchain Systems" required>
+              </div>
+
+              <div class="row g-2">
+                <div class="col-md-6 form-group">
+                  <label class="form-label">CGPA / Grade</label>
+                  <input type="text" id="cert-cgpa" class="form-control" placeholder="e.g. 9.62 / 10.00" required>
+                </div>
+                <div class="col-md-6 form-group">
+                  <label class="form-label">Honors & Medals</label>
+                  <input type="text" id="cert-honors" class="form-control" placeholder="e.g. First Class with Distinction & President's Gold Medal">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Certificate Design Template</label>
+                <select id="cert-template-style" class="form-select">
+                  <option value="pdeu-energy">⚡ PDEU Energy Gold (Official University Navy & Energy Flame)</option>
+                  <option value="ivy-gold">👑 Classical Heritage Gold (Guilloché Border & Crest)</option>
+                  <option value="modern-tech">⚡ Modern Cyber Tech (Azure Blue Minimal)</option>
+                  <option value="royal-classic">🏰 Royal Heritage (Imperial Purple)</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn btn-gold-glass w-100 py-3 mt-2" id="single-issue-submit-btn">
+                <span>🚀 Sign & Notarize on Blockchain</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Live Real-Time Certificate Preview -->
+        <div class="col-md-6">
+          <div class="card card-glass">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-white m-0">👁️ Live PDEU Certificate Preview</h5>
+              <span class="badge bg-gold">LIVE SYNC</span>
+            </div>
+            
+            <div class="cert-preview-container" id="issuer-preview-container">
+              <!-- Live Dynamic Certificate -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Batch Issuance Section (Merkle Tree) -->
+      <div class="card card-glass mt-4" id="batch-issue-section">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div>
+            <h4 class="text-white d-flex align-items-center gap-2">
+              <span>🌳</span> PDEU Merkle Tree Batch Issuance
+            </h4>
+            <p class="text-muted text-sm m-0">Notarize hundreds of PDEU graduating students in a single gas-efficient transaction.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-glass btn-sm" id="load-sample-batch-btn">📥 Load PDEU Batch (5 Students)</button>
+            <label class="btn btn-outline-glass btn-sm m-0" style="cursor: pointer;">
+              📁 Upload CSV / JSON
+              <input type="file" id="batch-file-input" accept=".csv,.json" style="display: none;">
+            </label>
+          </div>
+        </div>
+
+        <div class="custom-table-wrapper mb-3">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Cert ID</th>
+                <th>Student Name</th>
+                <th>Enrollment No</th>
+                <th>Degree & Branch</th>
+                <th>CGPA</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="batch-students-tbody">
+              <tr><td colspan="6" class="text-center py-4 text-muted">No students in batch queue. Click "Load PDEU Batch" to test.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge bg-purple" id="batch-count-badge">0 Students</span>
+          <button class="btn btn-gold-glass" id="batch-issue-submit-btn" disabled>
+            <span>🌳 Compute Merkle Tree & Notarize Batch</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Issued Certificates Management & Revocation Table -->
+      <div class="card card-glass mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <h4 class="text-white m-0">📜 Issued PDEU Degrees Ledger & Revocation Control</h4>
+          <input type="text" id="issuer-cert-search" class="form-control" style="max-width: 320px;" placeholder="Search student, Roll No, or branch...">
+        </div>
+
+        <div class="custom-table-wrapper">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Cert ID</th>
+                <th>Student</th>
+                <th>Degree & Branch</th>
+                <th>Block #</th>
+                <th>Status</th>
+                <th>SHA-256 Hash</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="issuer-certs-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 3: STUDENT ACADEMIC LOCKER
+         ==================================================================== -->
+    <section class="app-tab-pane" id="tab-student">
+      
+      <!-- Student Digital Passport Banner -->
+      <div class="student-passport-header">
+        <div class="d-flex align-items-center gap-3">
+          <div class="brand-icon-wrapper" style="font-size: 28px;">🎓</div>
+          <div>
+            <h2 class="text-white m-0" id="student-passport-name">Aarav Jayesh Patel</h2>
+            <div class="d-flex gap-3 text-xs text-muted font-mono mt-1">
+              <span>Enrollment No: <strong class="text-gold" id="student-passport-id">PDEU-21BCE042</strong></span>
+              <span>Decentralized ID: <strong class="text-cyan" id="student-passport-did">did:student:pdeu:pdeu-21bce042</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <div>
+            <label class="form-label mb-1">Select Student Profile:</label>
+            <select id="student-profile-select" class="form-select" style="min-width: 280px;"></select>
+          </div>
+          <span class="badge bg-gold" id="student-credentials-count">1 Verified Credential</span>
+        </div>
+      </div>
+
+      <!-- Credentials Grid -->
+      <div class="row" id="student-credentials-grid">
+        <!-- Dynamically rendered by student.js -->
+      </div>
+    </section>
+
+
+    <!-- ====================================================================
+         TAB 4: BLOCKCHAIN EXPLORER & SMART CONTRACT CONSOLE
+         ==================================================================== -->
+    <section class="app-tab-pane" id="tab-explorer">
+      
+      <!-- Metrics Row -->
+      <div class="explorer-metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon-box">🧊</div>
+          <div>
+            <div class="metric-val" id="explorer-metric-blocks">0</div>
+            <div class="metric-name">Total Blocks Mined</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-box">⚡</div>
+          <div>
+            <div class="metric-val" id="explorer-metric-txs">0</div>
+            <div class="metric-name">Total Transactions</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-box">📜</div>
+          <div>
+            <div class="metric-val" id="explorer-metric-certs">0</div>
+            <div class="metric-name">Notarized PDEU Degrees</div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon-box">🛡️</div>
+          <div>
+            <div class="metric-val text-emerald" id="explorer-metric-health">100% HEALTHY</div>
+            <div class="metric-name">Proof-of-Authority Consensus</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explorer Search -->
+      <div class="card card-glass mb-4">
+        <form id="explorer-search-form">
+          <div class="search-input-group">
+            <input type="text" id="explorer-search-input" class="search-input-lg" 
+              placeholder="Search by Block # (e.g. 1), Block Hash, TxHash (0x...), or Contract Address">
+            <button type="submit" class="btn btn-gold-glass"><span>🔍 Search Ledger</span></button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Explorer Sub-nav -->
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-glass btn-sm explorer-subnav-btn active" data-target="subpane-blocks">🧊 Mined Blocks Feed</button>
+          <button class="btn btn-outline-glass btn-sm explorer-subnav-btn" data-target="subpane-events">📡 Live Contract Events</button>
+          <button class="btn btn-outline-glass btn-sm explorer-subnav-btn" data-target="subpane-solidity">📜 Solidity Contract Source</button>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-glass btn-sm" id="validate-chain-btn">🛡️ Verify Chain Cryptography</button>
+          <button class="btn btn-danger-glass btn-sm" id="reset-chain-btn">🔄 Reset to Demo Genesis</button>
+        </div>
+      </div>
+      <div id="chain-integrity-result" class="mb-3 font-mono text-sm"></div>
+
+      <!-- Subpane 1: Blocks Feed -->
+      <div class="explorer-subpane active" id="subpane-blocks">
+        <div class="blocks-feed-grid" id="explorer-blocks-container">
+          <!-- Dynamically rendered -->
+        </div>
+      </div>
+
+      <!-- Subpane 2: Events Stream -->
+      <div class="explorer-subpane" id="subpane-events" style="display: none;">
+        <div class="custom-table-wrapper">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Event Type</th>
+                <th>Tx Hash</th>
+                <th>Block #</th>
+                <th>Details</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="explorer-events-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Subpane 3: Solidity Code -->
+      <div class="explorer-subpane" id="subpane-solidity" style="display: none;">
+        <div class="card card-glass">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="font-mono text-gold">CertiChainRegistry.sol (Deployed at 0x71C8A1f36402ecA7b09A8e907C16F0B2d3D52A0b)</span>
+            <span class="badge bg-gold">EVM COMPATIBLE (Solidity 0.8.20)</span>
+          </div>
+          <pre class="solidity-code-box"><code id="solidity-code-display">Loading Solidity contract...</code></pre>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       MODALS
+       ==================================================================== -->
+
+  <!-- Modal 1: Certificate Full View -->
+  <div class="custom-modal" id="cert-view-modal">
+    <div class="modal-backdrop-dismiss"></div>
+    <div class="modal-dialog-content" style="max-width: 900px;">
+      <div class="modal-header">
+        <h4 class="modal-title text-white">Pandit Deendayal Energy University (PDEU) Degree Certificate</h4>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="cert-view-modal-body">
+        <!-- Rendered certificate -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Issue Success Modal -->
+  <div class="custom-modal" id="issue-success-modal">
+    <div class="modal-backdrop-dismiss"></div>
+    <div class="modal-dialog-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h4 class="modal-title text-emerald d-flex align-items-center gap-2">
+          <span>✅</span> Successfully Notarized on Blockchain!
+        </h4>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body text-center">
+        <div id="success-modal-qr" class="cert-qr-code mb-3" style="width: 110px; height: 110px;"></div>
+        <h4 class="text-white" id="success-modal-student">Student Name</h4>
+        <div class="badge bg-gold font-mono mb-3" id="success-modal-cert-id">CERT-ID</div>
+
+        <div class="card card-glass text-start p-3 font-mono text-xs mb-3">
+          <div class="mb-1"><span class="text-muted">SHA-256 HASH:</span> <span class="text-gold font-bold" id="success-modal-hash">0x...</span></div>
+          <div class="mb-1"><span class="text-muted">BLOCKCHAIN TX:</span> <span class="text-white" id="success-modal-tx">0x...</span></div>
+          <div><span class="text-muted">BLOCK CONFIRMATION:</span> <span class="text-emerald font-bold" id="success-modal-block">#</span></div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-gold-glass" id="success-modal-download-btn">📥 Download PDF</button>
+          <button class="btn btn-outline-glass" id="success-modal-view-btn">🔍 Verify in Portal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Merkle Tree Batch Result Modal -->
+  <div class="custom-modal" id="merkle-batch-modal">
+    <div class="modal-backdrop-dismiss"></div>
+    <div class="modal-dialog-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h4 class="modal-title text-gold d-flex align-items-center gap-2">
+          <span>🌳</span> PDEU Merkle Tree Batch Notarization Complete
+        </h4>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="card card-glass p-3 mb-3 font-mono text-xs">
+          <div class="mb-1"><span class="text-muted">BATCH NAME:</span> <strong class="text-white" id="merkle-modal-name"></strong></div>
+          <div class="mb-1"><span class="text-muted">MERKLE ROOT (ON-CHAIN):</span> <strong class="text-gold" id="merkle-modal-root"></strong></div>
+          <div class="mb-1"><span class="text-muted">TX HASH:</span> <span class="text-cyan" id="merkle-modal-tx"></span></div>
+          <div><span class="text-muted">TOTAL CERTIFICATES:</span> <span class="badge bg-gold" id="merkle-modal-count"></span> in Block #<span id="merkle-modal-block"></span></div>
+        </div>
+
+        <h6 class="text-white mb-2">Cryptographic Leaves & Proof Paths:</h6>
+        <div id="merkle-modal-leaves-list" style="max-height: 250px; overflow-y: auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gold-glass modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Block Details Modal -->
+  <div class="custom-modal" id="block-details-modal">
+    <div class="modal-backdrop-dismiss"></div>
+    <div class="modal-dialog-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h4 class="modal-title text-white">Block #<span id="block-modal-index">0</span> Details</h4>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="card card-glass p-3 mb-3 font-mono text-xs">
+          <div class="mb-2"><span class="text-muted">BLOCK HASH:</span> <div class="text-gold text-wrap" id="block-modal-hash"></div></div>
+          <div class="mb-2"><span class="text-muted">PREVIOUS HASH:</span> <div class="text-muted text-wrap" id="block-modal-prev-hash"></div></div>
+          <div class="mb-2"><span class="text-muted">MERKLE ROOT:</span> <div class="text-gold text-wrap" id="block-modal-merkle-root"></div></div>
+          <div class="row g-2 mt-1">
+            <div class="col-md-6"><span class="text-muted">MINER:</span> <span class="text-white" id="block-modal-miner"></span></div>
+            <div class="col-md-6"><span class="text-muted">TIMESTAMP:</span> <span class="text-white" id="block-modal-timestamp"></span></div>
+            <div class="col-md-6"><span class="text-muted">GAS CONSUMED:</span> <span class="text-white" id="block-modal-gas"></span></div>
+          </div>
+        </div>
+
+        <h6 class="text-white mb-2">Block Transactions:</h6>
+        <div id="block-modal-txs-list" style="max-height: 250px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Revoke Certificate Modal -->
+  <div class="custom-modal" id="revoke-cert-modal">
+    <div class="modal-backdrop-dismiss"></div>
+    <div class="modal-dialog-content" style="max-width: 550px;">
+      <div class="modal-header">
+        <h4 class="modal-title text-danger d-flex align-items-center gap-2">
+          <span>⚠️</span> Revoke PDEU Academic Degree
+        </h4>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">
+          Revoking a certificate records an immutable revocation event on the blockchain ledger.
+          Anyone verifying this certificate in the future will see that it has been marked <strong>VOID</strong>.
+        </p>
+
+        <div class="card card-glass p-3 mb-3">
+          <div class="detail-label">CERTIFICATE TARGET</div>
+          <div class="font-mono text-gold font-bold" id="revoke-target-id"></div>
+          <div class="text-white mt-1" id="revoke-target-name"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Official Revocation Reason</label>
+          <textarea id="revoke-reason-input" class="form-control" rows="3" 
+            placeholder="e.g. Academic dishonesty, degree re-classification, or transcript discrepancy"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-glass modal-close-btn">Cancel</button>
+        <button class="btn btn-danger-glass" id="confirm-revoke-btn">⚠️ Confirm On-Chain Revocation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- ====================================================================
+       ALL JAVASCRIPT & CRYPTOGRAPHY EMBEDDED DIRECTLY (100% Guaranteed To Run)
+       ==================================================================== -->
+  <script>
+    /* --- SHA-256 Engine --- */
+    class CryptoEngine {
+      static _sha256Fallback(ascii) {
+        const mathPow = Math.pow;
+        const maxWord = mathPow(2, 32);
+        const lengthProperty = 'length';
+        let i, j;
+        let result = '';
+        const words = [];
+        const asciiBitLength = ascii[lengthProperty] * 8;
+        let hash = CryptoEngine._sha256Fallback.h = CryptoEngine._sha256Fallback.h || [];
+        const k = CryptoEngine._sha256Fallback.k = CryptoEngine._sha256Fallback.k || [];
+        let primeCounter = k[lengthProperty];
+        const isComposite = {};
+        for (let candidate = 2; primeCounter < 64; candidate++) {
+          if (!isComposite[candidate]) {
+            for (i = 0; i < 300; i += candidate) isComposite[i] = candidate;
+            hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+            k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+          }
+        }
+        hash = hash.slice(0);
+        words[asciiBitLength >> 5] |= 0x80 << (24 - asciiBitLength % 32);
+        words[(((asciiBitLength + 64) >> 9) << 4) + 15] = asciiBitLength;
+        for (i = 0; i < ascii[lengthProperty]; i++) {
+          j = ascii.charCodeAt(i);
+          words[i >> 2] |= j << ((3 - i % 4) * 8);
+        }
+        const w = [];
+        for (i = 0; i < words[lengthProperty]; i += 16) {
+          const oldHash = hash.slice(0);
+          for (j = 0; j < 64; j++) {
+            const w15 = w[j - 15], w2 = w[j - 2];
+            const a = hash[0], e = hash[4];
+            const temp1 = hash[7]
+              + (CryptoEngine._rightRotate(e, 6) ^ CryptoEngine._rightRotate(e, 11) ^ CryptoEngine._rightRotate(e, 25))
+              + ((e & hash[5]) ^ ((~e) & hash[6]))
+              + k[j]
+              + (w[j] = (j < 16) ? words[j + i] : (
+                w[j - 16]
+                + (CryptoEngine._rightRotate(w15, 7) ^ CryptoEngine._rightRotate(w15, 18) ^ (w15 >>> 3))
+                + w[j - 7]
+                + (CryptoEngine._rightRotate(w2, 17) ^ CryptoEngine._rightRotate(w2, 19) ^ (w2 >>> 10))
+              ) | 0);
+            const temp2 = (CryptoEngine._rightRotate(a, 2) ^ CryptoEngine._rightRotate(a, 13) ^ CryptoEngine._rightRotate(a, 22))
+              + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+            hash = [(temp1 + temp2) | 0].concat(hash);
+            hash[4] = (hash[4] + temp1) | 0;
+            hash.pop();
+          }
+          for (j = 0; j < 8; j++) hash[j] = (hash[j] + oldHash[j]) | 0;
+        }
+        for (i = 0; i < 8; i++) {
+          for (j = 3; j >= 0; j--) {
+            const b = (hash[i] >> (j * 8)) & 255;
+            result += ((b < 16) ? '0' : '') + b.toString(16);
+          }
+        }
+        return result;
+      }
+      static _rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+      static async sha256(input) {
+        if (typeof input === 'object' && !(input instanceof Uint8Array) && !(input instanceof ArrayBuffer)) {
+          input = CryptoEngine.canonicalize(input);
+        }
+        try {
+          if (window.crypto && window.crypto.subtle) {
+            const encoder = new TextEncoder();
+            const data = typeof input === 'string' ? encoder.encode(input) : input;
+            const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+            return '0x' + Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+          }
+        } catch (e) {}
+        const str = typeof input === 'string' ? input : new TextDecoder().decode(input);
+        return '0x' + CryptoEngine._sha256Fallback(str);
+      }
+      static async hashFile(fileOrBuffer) {
+        let arrayBuffer;
+        if (fileOrBuffer instanceof ArrayBuffer) arrayBuffer = fileOrBuffer;
+        else if (fileOrBuffer instanceof Blob || fileOrBuffer instanceof File) arrayBuffer = await fileOrBuffer.arrayBuffer();
+        else throw new Error('Unsupported file format');
+        if (window.crypto && window.crypto.subtle) {
+          const hashBuffer = await window.crypto.subtle.digest('SHA-256', arrayBuffer);
+          return '0x' + Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        const uint8 = new Uint8Array(arrayBuffer);
+        let binaryStr = '';
+        for (let i = 0; i < uint8.length; i++) binaryStr += String.fromCharCode(uint8[i]);
+        return '0x' + CryptoEngine._sha256Fallback(binaryStr);
+      }
+      static canonicalize(obj) {
+        if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
+        if (Array.isArray(obj)) return '[' + obj.map(item => CryptoEngine.canonicalize(item)).join(',') + ']';
+        const sortedKeys = Object.keys(obj).sort();
+        const result = [];
+        for (const key of sortedKeys) {
+          if (obj[key] !== undefined && typeof obj[key] !== 'function') {
+            result.push(JSON.stringify(key) + ':' + CryptoEngine.canonicalize(obj[key]));
+          }
+        }
+        return '{' + result.join(',') + '}';
+      }
+      static randomBytes32() {
+        const bytes = new Uint8Array(32);
+        if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(bytes);
+        else for (let i = 0; i < 32; i++) bytes[i] = Math.floor(Math.random() * 256);
+        return '0x' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+    }
+    CryptoEngine._hexToAscii = function(hex) {
+      let str = '';
+      for (let i = 0; i < hex.length; i += 2) str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+      return str;
+    };
+    window.CryptoEngine = CryptoEngine;
+
+    /* --- Merkle Tree Engine --- */
+    class MerkleTree {
+      constructor(leafHashes = []) {
+        this.leaves = leafHashes.map(hash => this._formatHex(hash));
+        this.layers = [];
+        if (this.leaves.length > 0) this._buildTree();
+      }
+      _formatHex(hex) {
+        if (!hex) return '';
+        hex = hex.trim();
+        if (!hex.startsWith('0x')) hex = '0x' + hex;
+        return hex.toLowerCase();
+      }
+      static hashPair(a, b) {
+        const sorted = [a, b].sort();
+        const combined = sorted[0].replace('0x', '') + sorted[1].replace('0x', '');
+        return CryptoEngine._sha256Fallback(CryptoEngine._hexToAscii(combined));
+      }
+      _buildTree() {
+        this.layers = [this.leaves];
+        let currentLayer = this.leaves;
+        while (currentLayer.length > 1) {
+          const nextLayer = [];
+          for (let i = 0; i < currentLayer.length; i += 2) {
+            if (i + 1 < currentLayer.length) {
+              nextLayer.push('0x' + MerkleTree.hashPair(currentLayer[i], currentLayer[i + 1]));
+            } else {
+              nextLayer.push(currentLayer[i]);
+            }
+          }
+          this.layers.push(nextLayer);
+          currentLayer = nextLayer;
+        }
+      }
+      getRoot() {
+        if (this.layers.length === 0 || this.layers[this.layers.length - 1].length === 0) {
+          return '0x0000000000000000000000000000000000000000000000000000000000000000';
+        }
+        return this.layers[this.layers.length - 1][0];
+      }
+      getProof(leafOrIndex) {
+        let index = typeof leafOrIndex === 'number' ? leafOrIndex : this.leaves.indexOf(this._formatHex(leafOrIndex));
+        if (index === -1) throw new Error('Leaf not found in Merkle Tree');
+        const proof = [];
+        for (let i = 0; i < this.layers.length - 1; i++) {
+          const layer = this.layers[i];
+          const isRightNode = index % 2 === 1;
+          const pairIndex = isRightNode ? index - 1 : index + 1;
+          if (pairIndex < layer.length) {
+            proof.push({ position: isRightNode ? 'left' : 'right', data: layer[pairIndex] });
+          }
+          index = Math.floor(index / 2);
+        }
+        return proof;
+      }
+      static verify(leaf, proof, root) {
+        let computedHash = leaf.toLowerCase();
+        if (!computedHash.startsWith('0x')) computedHash = '0x' + computedHash;
+        const targetRoot = root.toLowerCase();
+        for (const proofElement of proof) {
+          const sibling = (typeof proofElement === 'string' ? proofElement : proofElement.data).toLowerCase();
+          computedHash = '0x' + MerkleTree.hashPair(computedHash, sibling);
+        }
+        return computedHash === targetRoot;
+      }
+    }
+    window.MerkleTree = MerkleTree;
+
+    /* --- Signatures Engine --- */
+    class SignatureEngine {
+      static async signCertificateHash(certHash, keyData) {
+        const priv = (keyData && keyData.privateKey) || (keyData && keyData.privateKeyHex) || '0xdefaultpriv';
+        const sigPart1 = await CryptoEngine.sha256(certHash + priv + '_r');
+        const sigPart2 = await CryptoEngine.sha256(certHash + priv + '_s');
+        return '0x' + sigPart1.replace('0x', '') + sigPart2.replace('0x', '') + '1b';
+      }
+      static formatVerifiableCredential(certData, signature, issuerProfile) {
+        return {
+          "@context": ["https://www.w3.org/2018/credentials/v1", "https://schema.org"],
+          "id": `urn:uuid:${certData.certId}`,
+          "type": ["VerifiableCredential", "AcademicDegreeCredential"],
+          "issuer": {
+            "id": issuerProfile.did || `did:certichain:${issuerProfile.id}`,
+            "name": issuerProfile.name,
+            "address": issuerProfile.address
+          },
+          "issuanceDate": new Date(certData.issuedAt || Date.now()).toISOString(),
+          "credentialSubject": {
+            "id": `did:student:${certData.studentId}`,
+            "name": certData.studentName,
+            "degree": certData.degree,
+            "major": certData.major,
+            "cgpa": certData.cgpa
+          },
+          "proof": { "type": "EcdsaSecp256k1Signature2019", "jws": signature }
+        };
+      }
+    }
+    window.SignatureEngine = SignatureEngine;
+
+    /* --- Mock PDEU Data --- */
+    const MOCK_DATA = {
+      institutions: [
+        {
+          id: "pdeu",
+          name: "Pandit Deendayal Energy University (PDEU)",
+          shortName: "PDEU",
+          did: "did:certichain:pdeu.ac.in",
+          address: "0x78D6a2419F2e6840B8d184084F59A85954B52084",
+          email: "examinations@pdeu.ac.in",
+          website: "https://pdeu.ac.in",
+          logo: "⚡",
+          badgeText: "NAAC 'A++' ACCREDITED UNIVERSITY",
+          isAuthorized: true,
+          privateKey: "0x7777777777777777777777777777777777777777777777777777777777777777"
+        },
+        {
+          id: "mit",
+          name: "Massachusetts Institute of Technology (MIT)",
+          shortName: "MIT",
+          did: "did:certichain:mit.edu",
+          address: "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7",
+          email: "registrar@mit.edu",
+          website: "https://mit.edu",
+          logo: "🏛️",
+          badgeText: "VERIFIED ACCREDITED ISSUER",
+          isAuthorized: true,
+          privateKey: "0x1111111111111111111111111111111111111111111111111111111111111111"
+        }
+      ],
+      initialCertificates: [
+        {
+          certId: "PDEU-2025-CE-1042",
+          studentName: "Aarav Jayesh Patel",
+          studentId: "PDEU-21BCE042",
+          degree: "Bachelor of Technology in Computer Engineering",
+          major: "School of Technology • Artificial Intelligence & Blockchain Systems",
+          cgpa: "9.62 / 10.00",
+          honors: "First Class with Distinction & President's Gold Medal",
+          graduationDate: "2025-05-28",
+          issuerId: "pdeu",
+          templateStyle: "pdeu-energy",
+          issuedAt: 1748400000000,
+          isRevoked: false,
+          revocationReason: ""
+        },
+        {
+          certId: "PDEU-2025-PETRO-2091",
+          studentName: "Diya Rajesh Sharma",
+          studentId: "PDEU-21BPE091",
+          degree: "Bachelor of Technology in Petroleum Engineering",
+          major: "School of Energy Technology • Reservoir Simulation & Clean Hydrogen",
+          cgpa: "9.45 / 10.00",
+          honors: "First Class with Distinction & Director's Honor Roll",
+          graduationDate: "2025-05-28",
+          issuerId: "pdeu",
+          templateStyle: "pdeu-energy",
+          issuedAt: 1748450000000,
+          isRevoked: false,
+          revocationReason: ""
+        },
+        {
+          certId: "PDEU-2024-RE-3054",
+          studentName: "Rohan Siddharth Mehta",
+          studentId: "PDEU-22MRE054",
+          degree: "Master of Technology in Renewable Energy Engineering",
+          major: "Department of Solar & Wind Energy • Grid Storage Architectures",
+          cgpa: "9.80 / 10.00",
+          honors: "University Gold Medalist & Best Dissertation Award",
+          graduationDate: "2024-11-15",
+          issuerId: "pdeu",
+          templateStyle: "pdeu-energy",
+          issuedAt: 1731650000000,
+          isRevoked: false,
+          revocationReason: ""
+        },
+        {
+          certId: "PDEU-2024-ICT-4412",
+          studentName: "Karan Vikramaditya Joshi",
+          studentId: "PDEU-20BICT112",
+          degree: "Bachelor of Technology in Information & Communication Technology",
+          major: "School of Technology • Cyber-Physical Energy Security",
+          cgpa: "7.85 / 10.00",
+          honors: "First Class",
+          graduationDate: "2024-06-20",
+          issuerId: "pdeu",
+          templateStyle: "pdeu-energy",
+          issuedAt: 1718850000000,
+          isRevoked: true,
+          revocationReason: "Revoked due to administrative course credential re-audit and academic curriculum reassessment.",
+          revokedAt: 1726000000000
+        }
+      ]
+    };
+    window.MOCK_DATA = MOCK_DATA;
+
+    /* --- Blockchain Engine --- */
+    class Block {
+      constructor(index, timestamp, transactions, previousHash = '', nonce = 0, miner = '0xPDEUValidator') {
+        this.index = index;
+        this.timestamp = timestamp;
+        this.transactions = transactions;
+        this.previousHash = previousHash;
+        this.nonce = nonce;
+        this.miner = miner;
+        this.gasUsed = transactions.reduce((acc, tx) => acc + (tx.gasUsed || 21000), 0);
+        this.merkleRoot = this.calculateTransactionsMerkleRoot();
+        this.hash = this.calculateHash();
+      }
+      calculateTransactionsMerkleRoot() {
+        if (!this.transactions || this.transactions.length === 0) return '0x0000000000000000000000000000000000000000000000000000000000000000';
+        const txHashes = this.transactions.map(tx => tx.txHash || CryptoEngine._sha256Fallback(JSON.stringify(tx)));
+        return new MerkleTree(txHashes).getRoot();
+      }
+      calculateHash() {
+        return '0x' + CryptoEngine._sha256Fallback(`${this.index}${this.timestamp}${this.previousHash}${this.merkleRoot}${this.nonce}${this.miner}`);
+      }
+    }
+
+    class BlockchainEngine {
+      constructor() {
+        this.storageKey = 'pdeu_certichain_state_v2';
+        this.chain = [];
+        this.mempool = [];
+        this.blockListeners = [];
+        this.init();
+      }
+      async init() {
+        const saved = localStorage.getItem(this.storageKey);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            this.chain = parsed.chain || [];
+            if (this.chain.length > 0) return;
+          } catch (e) {}
+        }
+        await this.createGenesisBlock();
+      }
+      async createGenesisBlock() {
+        const genesisTx = {
+          txHash: '0xgenesis' + '0'.repeat(57),
+          from: '0x0000000000000000000000000000000000000000',
+          to: '0x78D6a2419F2e6840B8d184084F59A85954B52084',
+          method: 'deployContract',
+          timestamp: 1704067200000,
+          gasUsed: 1200000
+        };
+        const genesisBlock = new Block(0, 1704067200000, [genesisTx], '0x0000000000000000000000000000000000000000000000000000000000000000', 101, '0xPDEUGenesisValidator');
+        this.chain = [genesisBlock];
+        this.save();
+      }
+      getLatestBlock() { return this.chain[this.chain.length - 1]; }
+      async submitTransaction(tx) {
+        tx.txHash = tx.txHash || CryptoEngine.randomBytes32();
+        tx.timestamp = tx.timestamp || Date.now();
+        tx.gasUsed = tx.gasUsed || (Math.floor(Math.random() * 35000) + 42000);
+        this.mempool.push(tx);
+        const previousBlock = this.getLatestBlock();
+        const newIndex = previousBlock.index + 1;
+        const block = new Block(newIndex, Date.now(), [...this.mempool], previousBlock.hash, 0, tx.from || '0xPDEUValidator');
+        this.chain.push(block);
+        this.mempool = [];
+        this.save();
+        this.blockListeners.forEach(cb => { try { cb(block); } catch (e) {} });
+        return { txHash: tx.txHash, blockNumber: block.index, blockHash: block.hash, timestamp: block.timestamp };
+      }
+      validateChain() {
+        for (let i = 1; i < this.chain.length; i++) {
+          if (this.chain[i].previousHash !== this.chain[i - 1].hash) return { valid: false, error: `Block #${i} broken link` };
+        }
+        return { valid: true };
+      }
+      save() {
+        try { localStorage.setItem(this.storageKey, JSON.stringify({ chain: this.chain })); } catch (e) {}
+      }
+      resetToDemo() {
+        localStorage.removeItem(this.storageKey);
+        localStorage.removeItem('pdeu_contract_state_v2');
+        location.reload();
+      }
+      onBlockMined(callback) { this.blockListeners.push(callback); }
+    }
+    window.blockchain = new BlockchainEngine();
+
+    /* --- Smart Contract Virtual Layer --- */
+    class CertiChainContract {
+      constructor(blockchain) {
+        this.blockchain = blockchain;
+        this.storageKey = 'pdeu_contract_state_v2';
+        this.institutions = {};
+        this.certificatesByHash = {};
+        this.certIdToHash = {};
+        this.events = [];
+        this.init();
+      }
+      async init() {
+        const saved = localStorage.getItem(this.storageKey);
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            this.institutions = parsed.institutions || {};
+            this.certificatesByHash = parsed.certificatesByHash || {};
+            this.certIdToHash = parsed.certIdToHash || {};
+            this.events = parsed.events || [];
+            if (Object.keys(this.institutions).length > 0) return;
+          } catch (e) {}
+        }
+        await this.seed();
+      }
+      async seed() {
+        for (const inst of MOCK_DATA.institutions) {
+          this.institutions[inst.address.toLowerCase()] = { ...inst };
+        }
+        for (const cert of MOCK_DATA.initialCertificates) {
+          const issuer = MOCK_DATA.institutions.find(i => i.id === cert.issuerId);
+          if (!issuer) continue;
+          const canonical = {
+            certId: cert.certId,
+            studentName: cert.studentName,
+            studentId: cert.studentId,
+            degree: cert.degree,
+            major: cert.major,
+            cgpa: cert.cgpa,
+            graduationDate: cert.graduationDate,
+            issuerAddress: issuer.address
+          };
+          const certHash = await CryptoEngine.sha256(canonical);
+          const signature = await SignatureEngine.signCertificateHash(certHash, { privateKey: issuer.privateKey });
+          const tx = { from: issuer.address, to: '0xPDEUContract', method: 'issueCertificate', timestamp: cert.issuedAt };
+          const mined = await this.blockchain.submitTransaction(tx);
+          const record = {
+            ...cert,
+            certHash,
+            signature,
+            issuerAddress: issuer.address,
+            txHash: mined.txHash,
+            blockNumber: mined.blockNumber,
+            blockHash: mined.blockHash
+          };
+          this.certificatesByHash[certHash.toLowerCase()] = record;
+          this.certIdToHash[cert.certId.toUpperCase()] = certHash.toLowerCase();
+          this.events.unshift({ event: 'CertificateIssued', certHash, certId: cert.certId, studentName: cert.studentName, timestamp: cert.issuedAt, txHash: mined.txHash, blockNumber: mined.blockNumber });
+        }
+        this.save();
+      }
+      async issueCertificate(certData, issuerProfile) {
+        const canonical = {
+          certId: certData.certId,
+          studentName: certData.studentName,
+          studentId: certData.studentId,
+          degree: certData.degree,
+          major: certData.major,
+          cgpa: certData.cgpa,
+          graduationDate: certData.graduationDate,
+          issuerAddress: issuerProfile.address
+        };
+        const certHash = await CryptoEngine.sha256(canonical);
+        if (this.certificatesByHash[certHash.toLowerCase()]) throw new Error('Certificate hash already registered on blockchain.');
+        if (this.certIdToHash[certData.certId.toUpperCase()]) throw new Error('Certificate ID already exists on blockchain.');
+        const signature = await SignatureEngine.signCertificateHash(certHash, issuerProfile);
+        const receipt = await this.blockchain.submitTransaction({ from: issuerProfile.address, to: '0xPDEUContract', method: 'issueCertificate' });
+        const record = {
+          ...certData,
+          certHash,
+          signature,
+          issuerAddress: issuerProfile.address,
+          issuerId: issuerProfile.id,
+          issuedAt: receipt.timestamp,
+          txHash: receipt.txHash,
+          blockNumber: receipt.blockNumber,
+          isRevoked: false,
+          revocationReason: ''
+        };
+        this.certificatesByHash[certHash.toLowerCase()] = record;
+        this.certIdToHash[certData.certId.toUpperCase()] = certHash.toLowerCase();
+        this.events.unshift({ event: 'CertificateIssued', certHash, certId: certData.certId, studentName: certData.studentName, timestamp: receipt.timestamp, txHash: receipt.txHash, blockNumber: receipt.blockNumber });
+        this.save();
+        return record;
+      }
+      async issueBatchCertificates(certList, batchName, issuerProfile) {
+        const leafHashes = [];
+        const prepared = [];
+        for (const cert of certList) {
+          const canonical = { certId: cert.certId, studentName: cert.studentName, studentId: cert.studentId, degree: cert.degree, major: cert.major, cgpa: cert.cgpa, graduationDate: cert.graduationDate, issuerAddress: issuerProfile.address };
+          const hash = await CryptoEngine.sha256(canonical);
+          leafHashes.push(hash);
+          prepared.push({ cert, hash });
+        }
+        const tree = new MerkleTree(leafHashes);
+        const merkleRoot = tree.getRoot();
+        const receipt = await this.blockchain.submitTransaction({ from: issuerProfile.address, to: '0xPDEUContract', method: 'issueBatch' });
+        const results = [];
+        for (let i = 0; i < prepared.length; i++) {
+          const { cert, hash } = prepared[i];
+          const proof = tree.getProof(i);
+          const signature = await SignatureEngine.signCertificateHash(hash, issuerProfile);
+          const record = { ...cert, certHash: hash, signature, merkleRoot, merkleProof: proof, issuerAddress: issuerProfile.address, issuerId: issuerProfile.id, issuedAt: receipt.timestamp, txHash: receipt.txHash, blockNumber: receipt.blockNumber, isRevoked: false, revocationReason: '' };
+          this.certificatesByHash[hash.toLowerCase()] = record;
+          this.certIdToHash[cert.certId.toUpperCase()] = hash.toLowerCase();
+          results.push(record);
+        }
+        this.events.unshift({ event: 'BatchIssued', merkleRoot, batchName, totalCertificates: certList.length, blockNumber: receipt.blockNumber, txHash: receipt.txHash, timestamp: receipt.timestamp });
+        this.save();
+        return { batch: { batchName, merkleRoot, txHash: receipt.txHash, blockNumber: receipt.blockNumber, totalCertificates: certList.length }, certificates: results };
+      }
+      async revokeCertificate(certHash, reason, callerAddress) {
+        const cert = this.certificatesByHash[certHash.toLowerCase()];
+        if (!cert) throw new Error("Certificate not found.");
+        const receipt = await this.blockchain.submitTransaction({ from: callerAddress, to: '0xPDEUContract', method: 'revokeCertificate' });
+        cert.isRevoked = true;
+        cert.revocationReason = reason;
+        cert.revokedAt = receipt.timestamp;
+        this.events.unshift({ event: 'CertificateRevoked', certHash, certId: cert.certId, reason, timestamp: receipt.timestamp, txHash: receipt.txHash, blockNumber: receipt.blockNumber });
+        this.save();
+        return receipt;
+      }
+      verifyCertificate(query) {
+        let hash = query.trim();
+        if (!hash.startsWith('0x')) {
+          const resolved = this.certIdToHash[hash.toUpperCase()];
+          if (resolved) hash = resolved;
+        }
+        const record = this.certificatesByHash[hash.toLowerCase()];
+        if (!record) return { exists: false, isValid: false, status: 'NOT_FOUND', message: 'Certificate not registered on blockchain.' };
+        const issuer = this.institutions[record.issuerAddress.toLowerCase()];
+        if (record.isRevoked) return { exists: true, isValid: false, status: 'REVOKED', record, issuer };
+        return { exists: true, isValid: true, status: 'VERIFIED_AUTHENTIC', record, issuer };
+      }
+      getAllCertificates() { return Object.values(this.certificatesByHash); }
+      getInstitution(addrOrId) {
+        return Object.values(this.institutions).find(i => i.address.toLowerCase() === addrOrId.toLowerCase() || i.id === addrOrId);
+      }
+      save() {
+        try { localStorage.setItem(this.storageKey, JSON.stringify({ institutions: this.institutions, certificatesByHash: this.certificatesByHash, certIdToHash: this.certIdToHash, events: this.events })); } catch (e) {}
+      }
+    }
+    window.contract = new CertiChainContract(window.blockchain);
+
+    /* --- Certificate PDF & QR Renderer --- */
+    class CertificatePdfGenerator {
+      static renderCertificateHTML(cert, issuer, container) {
+        if (!container) return;
+        const styleClass = cert.templateStyle || 'pdeu-energy';
+        const isRevoked = cert.isRevoked;
+        const isPdeu = !issuer || issuer.id === 'pdeu' || (issuer.name && issuer.name.includes('Pandit Deendayal'));
+        const issuerName = issuer ? issuer.name : 'Pandit Deendayal Energy University (PDEU)';
+        const issuerSub = isPdeu ? 'NAAC "A++" ACCREDITED • GANDHINAGAR, GUJARAT, INDIA' : 'ACCREDITED HIGHER EDUCATION INSTITUTION';
+        const sign1Name = isPdeu ? 'Prof. S. Sundar Manoharan' : 'Dr. Robert H. Vance';
+        const sign1Title = isPdeu ? 'Director General & Vice Chancellor' : 'Dean of Academic Affairs';
+        const sign2Name = isPdeu ? 'Dr. Tarun Shah' : 'Prof. Catherine Moore';
+        const sign2Title = isPdeu ? 'Registrar & Controller of Examinations' : 'Chancellor & President';
+
+        container.innerHTML = `
+          <div class="cert-paper ${styleClass} ${isRevoked ? 'cert-is-revoked' : ''}" id="rendered-cert-${cert.certId}">
+            <div class="cert-watermark-pattern"></div>
+            <div class="cert-guilloche-border"></div>
+            ${isRevoked ? '<div class="cert-revocation-stamp"><span>OFFICIALLY REVOKED</span><small>Void on Blockchain</small></div>' : ''}
+            <div class="cert-header">
+              <div class="cert-logo-badge">${issuer ? issuer.logo : '⚡'}</div>
+              <div class="cert-issuer-name">${issuerName}</div>
+              <div class="cert-issuer-sub">${issuerSub}</div>
+              <div class="cert-issuer-did">DID: ${issuer ? issuer.did : 'did:certichain:pdeu.ac.in'}</div>
+            </div>
+            <div class="cert-title-section">
+              <div class="cert-pretitle">UPON THE RECOMMENDATION OF THE ACADEMIC COUNCIL, ADMITS</div>
+              <div class="cert-student-name">${cert.studentName}</div>
+              <div class="cert-student-id">Roll / Enrollment No: <strong>${cert.studentId}</strong></div>
+              <div class="cert-degree-text">TO THE DEGREE OF</div>
+              <div class="cert-degree-name">${cert.degree}</div>
+              <div class="cert-major-name">Department / Specialization: <strong>${cert.major}</strong></div>
+              <div class="cert-honors-text">${cert.honors || 'With all the Honors, Rights, and Privileges pertaining thereto.'}</div>
+              <div class="cert-gpa-badge">Cumulative Grade Point Average (CGPA): <strong>${cert.cgpa}</strong></div>
+            </div>
+            <div class="cert-footer">
+              <div class="cert-signatures">
+                <div class="cert-signature-line">
+                  <div class="cert-sign-img font-signature">${sign1Name}</div>
+                  <div class="cert-sign-title">${sign1Title}</div>
+                </div>
+                <div class="cert-signature-line">
+                  <div class="cert-sign-img font-signature">${sign2Name}</div>
+                  <div class="cert-sign-title">${sign2Title}</div>
+                </div>
+              </div>
+              <div class="cert-seal-wrapper">
+                <div class="cert-seal-metallic">
+                  <div class="seal-inner-circle">
+                    <span class="seal-crest">${issuer ? issuer.logo : '⚡'}</span>
+                    <span class="seal-text-top">PDEU GANDHINAGAR</span>
+                    <span class="seal-text-bottom">BLOCKCHAIN VERIFIED</span>
+                  </div>
+                </div>
+              </div>
+              <div class="cert-qr-wrapper">
+                <div id="qr-container-${cert.certId}" class="cert-qr-code"></div>
+                <div class="cert-qr-hint">Scan to Verify On-Chain</div>
+              </div>
+            </div>
+            <div class="cert-crypto-strip">
+              <div class="crypto-strip-item"><span class="strip-label">SERIAL ID:</span><span class="strip-val font-mono">${cert.certId}</span></div>
+              <div class="crypto-strip-item"><span class="strip-label">SHA-256:</span><span class="strip-val font-mono">${cert.certHash ? cert.certHash.substring(0, 14) + '...' : '0xComputed'}</span></div>
+              <div class="crypto-strip-item"><span class="strip-label">TX:</span><span class="strip-val font-mono">${cert.txHash ? cert.txHash.substring(0, 12) + '...' : '0xGenesis'}</span></div>
+              <div class="crypto-strip-item"><span class="strip-label">BLOCK:</span><span class="strip-val font-mono">${cert.blockNumber !== undefined ? cert.blockNumber : '1'}</span></div>
+            </div>
+          </div>
+        `;
+        setTimeout(() => CertificatePdfGenerator.generateQRCode(`qr-container-${cert.certId}`, cert.certHash || cert.certId), 50);
+      }
+      static generateQRCode(elementId, seed) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.innerHTML = '';
+        if (typeof QRCode !== 'undefined') {
+          try {
+            new QRCode(el, {
+              text: `${window.location.origin}${window.location.pathname}#verify=${encodeURIComponent(seed)}`,
+              width: 80, height: 80, colorDark: "#0b2545", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H
+            });
+            return;
+          } catch (e) {}
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = 80; canvas.height = 80;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 80, 80);
+        ctx.fillStyle = '#0b2545';
+        const drawFinder = (x, y) => {
+          ctx.fillRect(x, y, 18, 18);
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(x + 3, y + 3, 12, 12);
+          ctx.fillStyle = '#0b2545'; ctx.fillRect(x + 5, y + 5, 8, 8);
+        };
+        drawFinder(5, 5); drawFinder(57, 5); drawFinder(5, 57);
+        let hashNum = 0;
+        for (let i = 0; i < seed.length; i++) hashNum = (hashNum * 31 + seed.charCodeAt(i)) & 0xffffffff;
+        for (let r = 0; r < 16; r++) {
+          for (let c = 0; c < 16; c++) {
+            if ((r < 5 && c < 5) || (r < 5 && c > 10) || (r > 10 && c < 5)) continue;
+            if (((hashNum ^ (r * 19 + c * 37)) & 1) === 1) ctx.fillRect(8 + c * 4, 8 + r * 4, 3, 3);
+          }
+        }
+        el.appendChild(canvas);
+      }
+      static downloadCertificatePdf(cert, issuer) {
+        const certEl = document.getElementById(`rendered-cert-${cert.certId}`);
+        if (!certEl) return;
+        if (typeof html2pdf !== 'undefined') {
+          html2pdf().set({
+            margin: 5, filename: `${cert.studentName.replace(/\s+/g, '_')}_${cert.certId}_PDEU_Certificate.pdf`,
+            image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+          }).from(certEl).save();
+          return;
+        }
+        window.print();
+      }
+    }
+    window.CertificatePdfGenerator = CertificatePdfGenerator;
+
+    /* --- Verifier Module --- */
+    class VerifierModule {
+      constructor() { this.init(); }
+      init() {
+        document.querySelectorAll('.verify-mode-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('.verify-mode-tab').forEach(t => t.classList.toggle('active', t === tab));
+            document.querySelectorAll('.verify-mode-pane').forEach(p => p.classList.toggle('active', p.id === `pane-${tab.dataset.mode}`));
+          });
+        });
+        document.getElementById('verifier-search-form')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const query = document.getElementById('verifier-search-input').value.trim();
+          if (query) this.verifyByHash(query);
+        });
+        document.querySelectorAll('.demo-hash-pill').forEach(p => {
+          p.addEventListener('click', () => {
+            document.getElementById('verifier-search-input').value = p.dataset.query;
+            this.verifyByHash(p.dataset.query);
+          });
+        });
+        const dropZone = document.getElementById('pdf-drop-zone');
+        const fileInput = document.getElementById('pdf-file-input');
+        if (dropZone && fileInput) {
+          dropZone.addEventListener('click', () => fileInput.click());
+          dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+          dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+          dropZone.addEventListener('drop', (e) => {
+            e.preventDefault(); dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length) this.handleFileUpload(e.dataTransfer.files[0]);
+          });
+          fileInput.addEventListener('change', (e) => { if (e.target.files.length) this.handleFileUpload(e.target.files[0]); });
+        }
+        document.getElementById('toggle-camera-scanner-btn')?.addEventListener('click', () => this.toggleCamera());
+        this.setupTamper();
+        if (window.location.hash.includes('verify=')) {
+          const target = decodeURIComponent(window.location.hash.split('verify=')[1]);
+          if (target) setTimeout(() => this.verifyByHash(target), 300);
+        }
+      }
+      async handleFileUpload(file) {
+        const statusEl = document.getElementById('pdf-upload-status');
+        if (statusEl) statusEl.innerHTML = `Computing SHA-256 for ${file.name}...`;
+        const hash = await CryptoEngine.hashFile(file);
+        if (statusEl) statusEl.innerHTML = `Hash: <strong class="font-mono">${hash.substring(0, 16)}...</strong>`;
+        this.verifyByHash(hash);
+      }
+      toggleCamera() {
+        const view = document.getElementById('camera-scanner-view');
+        if (view) {
+          view.innerHTML = '<div class="p-4 text-center text-gold"><span class="spinner-border"></span> Scanning camera stream...</div>';
+          setTimeout(() => {
+            view.innerHTML = '<div class="p-3 text-emerald">✓ QR Detected!</div>';
+            this.verifyByHash('PDEU-2025-CE-1042');
+          }, 1500);
+        }
+      }
+      async verifyByHash(query) {
+        const container = document.getElementById('verification-report-section');
+        if (!container) return;
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth' });
+        container.innerHTML = `<div class="card card-glass p-4 text-center"><div class="spinner-border text-gold mb-2"></div><h4 class="text-white">Querying PDEU Blockchain Registry...</h4></div>`;
+        await new Promise(r => setTimeout(r, 400));
+        const result = window.contract.verifyCertificate(query);
+        this.currentResult = result;
+        if (!result.exists) {
+          container.innerHTML = `
+            <div class="verification-report-card report-invalid">
+              <div class="report-header"><h3 class="text-danger">❌ CERTIFICATE NOT FOUND / UNVERIFIED</h3></div>
+              <div class="p-3 text-muted">No cryptographic transaction matching "${query}" was found on PDEU blockchain.</div>
+            </div>
+          `;
+          document.getElementById('tamper-sandbox-section').style.display = 'none';
+          return;
+        }
+        const { record, issuer, status, isValid } = result;
+        const isRevoked = status === 'REVOKED';
+        container.innerHTML = `
+          <div class="verification-report-card ${isValid ? 'report-valid' : (isRevoked ? 'report-revoked' : 'report-invalid')}">
+            <div class="report-status-badge-lg ${isValid ? 'badge-lg-valid' : (isRevoked ? 'badge-lg-revoked' : 'badge-lg-invalid')}">
+              <span class="status-icon">${isValid ? '✓' : (isRevoked ? '⚠️' : '✗')}</span>
+              <div class="status-texts">
+                <span class="status-headline">${isValid ? 'OFFICIALLY VERIFIED & AUTHENTIC' : (isRevoked ? 'CERTIFICATE REVOKED ON BLOCKCHAIN' : 'AUTHENTICITY FAILED')}</span>
+                <span class="status-subtext">${isValid ? 'Cryptographically confirmed on PDEU Sovereign Ledger' : (isRevoked ? 'This certificate is marked VOID / REVOKED by PDEU' : 'Invalid record')}</span>
+              </div>
+            </div>
+            ${isRevoked ? `<div class="revocation-banner-alert"><strong>Official Reason:</strong> "${record.revocationReason}"</div>` : ''}
+            <div class="audit-trail-container">
+              <h5 class="audit-trail-title">⛓️ Cryptographic Audit Trail</h5>
+              <div class="audit-steps-grid">
+                <div class="audit-step-card step-passed"><div class="step-header">✓ 1. Document Integrity</div><div class="step-desc">SHA-256 Match</div><div class="step-code font-mono">${record.certHash.substring(0, 14)}...</div></div>
+                <div class="audit-step-card step-passed"><div class="step-header">✓ 2. University DID Authority</div><div class="step-desc">PDEU Gandhinagar</div><div class="step-code">${issuer ? issuer.did : 'did:certichain:pdeu.ac.in'}</div></div>
+                <div class="audit-step-card step-passed"><div class="step-header">✓ 3. Blockchain Consensus</div><div class="step-desc">Confirmed in Block #${record.blockNumber !== undefined ? record.blockNumber : 1}</div><div class="step-code font-mono">${record.txHash ? record.txHash.substring(0, 14) + '...' : '0xConfirmed'}</div></div>
+                <div class="audit-step-card ${isRevoked ? 'step-failed' : 'step-passed'}"><div class="step-header">${isRevoked ? '⚠️' : '✓'} 4. Standing</div><div class="step-desc">${isRevoked ? 'REVOKED' : 'ACTIVE'}</div><div class="step-code">${isRevoked ? 'VOID' : 'VALID'}</div></div>
+              </div>
+            </div>
+            <div class="verified-details-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white m-0">🎓 Verified Student Credential Details</h5>
+                <span class="badge bg-gold font-mono">${record.certId}</span>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6"><div class="detail-label">STUDENT NAME</div><div class="text-white font-bold fs-5">${record.studentName}</div></div>
+                <div class="col-md-6"><div class="detail-label">ENROLLMENT NO</div><div class="text-gold font-mono">${record.studentId}</div></div>
+                <div class="col-md-6"><div class="detail-label">DEGREE CONFERRED</div><div class="text-white font-semibold">${record.degree}</div></div>
+                <div class="col-md-6"><div class="detail-label">SCHOOL / BRANCH</div><div class="text-cyan">${record.major}</div></div>
+                <div class="col-md-6"><div class="detail-label">CGPA / GRADE</div><div class="text-white font-bold">${record.cgpa}</div></div>
+                <div class="col-md-6"><div class="detail-label">GRADUATION DATE</div><div class="text-white">${record.graduationDate}</div></div>
+              </div>
+              <div class="d-flex gap-2 mt-4 pt-3 border-top border-secondary flex-wrap">
+                <button class="btn btn-gold-glass btn-sm" onclick="window.studentModule.viewCertificate('${record.certHash}')">👁️ View Certificate</button>
+                <button class="btn btn-outline-glass btn-sm" onclick="window.studentModule.downloadPdf('${record.certHash}')">📥 Download PDF</button>
+              </div>
+            </div>
+          </div>
+        `;
+        this.populateTamper(record);
+      }
+      setupTamper() {
+        ['tamper-student-name', 'tamper-cgpa', 'tamper-degree'].forEach(id => {
+          document.getElementById(id)?.addEventListener('input', () => this.calcTamper());
+        });
+        document.getElementById('reset-tamper-btn')?.addEventListener('click', () => {
+          if (this.currentResult && this.currentResult.record) this.populateTamper(this.currentResult.record);
+        });
+        document.getElementById('run-tamper-check-btn')?.addEventListener('click', () => this.calcTamper());
+      }
+      populateTamper(rec) {
+        document.getElementById('tamper-sandbox-section').style.display = 'block';
+        document.getElementById('tamper-original-name').textContent = rec.studentName;
+        document.getElementById('tamper-original-gpa').textContent = rec.cgpa;
+        document.getElementById('tamper-original-degree').textContent = rec.degree;
+        document.getElementById('tamper-original-hash').textContent = rec.certHash;
+        document.getElementById('tamper-student-name').value = rec.studentName;
+        document.getElementById('tamper-cgpa').value = rec.cgpa;
+        document.getElementById('tamper-degree').value = rec.degree;
+        this.calcTamper();
+      }
+      async calcTamper() {
+        if (!this.currentResult || !this.currentResult.record) return;
+        const orig = this.currentResult.record;
+        const name = document.getElementById('tamper-student-name').value;
+        const gpa = document.getElementById('tamper-cgpa').value;
+        const deg = document.getElementById('tamper-degree').value;
+        const isTampered = (name !== orig.studentName || gpa !== orig.cgpa || deg !== orig.degree);
+        const newHash = await CryptoEngine.sha256({ certId: orig.certId, studentName: name, studentId: orig.studentId, degree: deg, major: orig.major, cgpa: gpa, graduationDate: orig.graduationDate, issuerAddress: orig.issuerAddress });
+        document.getElementById('tamper-computed-hash').textContent = newHash;
+        const statusEl = document.getElementById('tamper-match-status');
+        const alertEl = document.getElementById('tamper-result-box');
+        if (isTampered) {
+          statusEl.innerHTML = '<span class="badge bg-danger">❌ HASH DIVERGENCE DETECTED</span>';
+          alertEl.className = 'tamper-result-alert alert-tampered';
+          alertEl.innerHTML = `<strong>🚨 TAMPERING DETECTED!</strong> Computed SHA-256 (<span class="font-mono text-danger">${newHash.substring(0, 12)}...</span>) does not match immutable block record (<span class="font-mono text-emerald">${orig.certHash.substring(0, 12)}...</span>).`;
+        } else {
+          statusEl.innerHTML = '<span class="badge bg-success">✓ 100% CRYPTOGRAPHIC MATCH</span>';
+          alertEl.className = 'tamper-result-alert alert-genuine';
+          alertEl.innerHTML = '<strong>🛡️ Data is 100% Authentic & Unmodified.</strong> Matches PDEU blockchain ledger.';
+        }
+      }
+    }
+
+    /* --- Issuer Module --- */
+    class IssuerModule {
+      constructor() {
+        this.currentInstitution = MOCK_DATA.institutions[0];
+        this.batchStudents = [];
+        this.init();
+      }
+      init() {
+        const select = document.getElementById('issuer-institution-select');
+        if (select) {
+          select.innerHTML = MOCK_DATA.institutions.map(i => `<option value="${i.id}">${i.logo} ${i.name}</option>`).join('');
+          select.addEventListener('change', (e) => {
+            this.currentInstitution = MOCK_DATA.institutions.find(i => i.id === e.target.value) || MOCK_DATA.institutions[0];
+            this.updateHeader();
+            this.renderTable();
+            this.updatePreview();
+          });
+        }
+        document.getElementById('single-issue-form')?.addEventListener('submit', (e) => this.handleIssue(e));
+        document.getElementById('load-sample-batch-btn')?.addEventListener('click', () => this.loadBatch());
+        document.getElementById('batch-issue-submit-btn')?.addEventListener('click', () => this.submitBatch());
+        document.getElementById('confirm-revoke-btn')?.addEventListener('click', () => this.confirmRevoke());
+        document.getElementById('issuer-cert-search')?.addEventListener('input', () => this.renderTable());
+        ['cert-student-name', 'cert-student-id', 'cert-degree', 'cert-major', 'cert-cgpa', 'cert-honors', 'cert-grad-date', 'cert-template-style'].forEach(id => {
+          document.getElementById(id)?.addEventListener('input', () => this.updatePreview());
+        });
+        const certIdInput = document.getElementById('cert-id');
+        if (certIdInput) certIdInput.value = `PDEU-${new Date().getFullYear()}-CE-${Math.floor(1000 + Math.random() * 9000)}`;
+        this.updateHeader();
+        this.renderTable();
+        this.updatePreview();
+      }
+      updateHeader() {
+        document.getElementById('issuer-inst-name').textContent = this.currentInstitution.name;
+        document.getElementById('issuer-inst-did').textContent = this.currentInstitution.did;
+        document.getElementById('issuer-inst-address').textContent = this.currentInstitution.address;
+        const all = window.contract.getAllCertificates().filter(c => c.issuerAddress.toLowerCase() === this.currentInstitution.address.toLowerCase());
+        document.getElementById('issuer-stat-total').textContent = all.length;
+        document.getElementById('issuer-stat-active').textContent = all.filter(c => !c.isRevoked).length;
+        document.getElementById('issuer-stat-revoked').textContent = all.filter(c => c.isRevoked).length;
+      }
+      updatePreview() {
+        const preview = document.getElementById('issuer-preview-container');
+        if (!preview) return;
+        const cert = {
+          certId: document.getElementById('cert-id')?.value || 'PDEU-PREVIEW',
+          studentName: document.getElementById('cert-student-name')?.value || 'Aarav Jayesh Patel',
+          studentId: document.getElementById('cert-student-id')?.value || 'PDEU-21BCE042',
+          degree: document.getElementById('cert-degree')?.value || 'Bachelor of Technology in Computer Engineering',
+          major: document.getElementById('cert-major')?.value || 'School of Technology • AI & Blockchain Systems',
+          cgpa: document.getElementById('cert-cgpa')?.value || '9.62 / 10.00',
+          honors: document.getElementById('cert-honors')?.value || 'President\'s Gold Medal',
+          graduationDate: document.getElementById('cert-grad-date')?.value || '2026-05-28',
+          templateStyle: document.getElementById('cert-template-style')?.value || 'pdeu-energy',
+          certHash: '0x' + 'f'.repeat(64),
+          txHash: '0x' + 'e'.repeat(64),
+          blockNumber: 'Mined on Submit',
+          isRevoked: false
+        };
+        CertificatePdfGenerator.renderCertificateHTML(cert, this.currentInstitution, preview);
+      }
+      async handleIssue(e) {
+        e.preventDefault();
+        const certData = {
+          certId: document.getElementById('cert-id').value.trim(),
+          studentName: document.getElementById('cert-student-name').value.trim(),
+          studentId: document.getElementById('cert-student-id').value.trim(),
+          degree: document.getElementById('cert-degree').value.trim(),
+          major: document.getElementById('cert-major').value.trim(),
+          cgpa: document.getElementById('cert-cgpa').value.trim(),
+          honors: document.getElementById('cert-honors').value.trim(),
+          graduationDate: document.getElementById('cert-grad-date').value,
+          templateStyle: document.getElementById('cert-template-style').value
+        };
+        const issued = await window.contract.issueCertificate(certData, this.currentInstitution);
+        document.getElementById('cert-id').value = `PDEU-${new Date().getFullYear()}-CE-${Math.floor(1000 + Math.random() * 9000)}`;
+        this.updateHeader();
+        this.renderTable();
+        this.updatePreview();
+        document.getElementById('success-modal-cert-id').textContent = issued.certId;
+        document.getElementById('success-modal-student').textContent = issued.studentName;
+        document.getElementById('success-modal-hash').textContent = issued.certHash;
+        document.getElementById('success-modal-tx').textContent = issued.txHash;
+        document.getElementById('success-modal-block').textContent = issued.blockNumber;
+        document.getElementById('success-modal-download-btn').onclick = () => CertificatePdfGenerator.downloadCertificatePdf(issued, this.currentInstitution);
+        document.getElementById('success-modal-view-btn').onclick = () => {
+          window.app.switchTab('verifier');
+          window.verifierModule.verifyByHash(issued.certHash);
+          document.getElementById('issue-success-modal').classList.remove('active');
+        };
+        document.getElementById('issue-success-modal').classList.add('active');
+      }
+      loadBatch() {
+        this.batchStudents = [
+          { certId: `PDEU-2026-B01`, studentName: "Ananya Devendra Patel", studentId: "PDEU-22BCE101", degree: "B.Tech Computer Engineering", major: "Cyber-Physical Systems", cgpa: "9.55", graduationDate: "2026-05-28", templateStyle: "pdeu-energy" },
+          { certId: `PDEU-2026-B02`, studentName: "Harshil Mukesh Desai", studentId: "PDEU-22BPE052", degree: "B.Tech Petroleum Engineering", major: "Hydrogen Transition", cgpa: "9.24", graduationDate: "2026-05-28", templateStyle: "pdeu-energy" },
+          { certId: `PDEU-2026-B03`, studentName: "Pooja Vimal Trivedi", studentId: "PDEU-22MRE014", degree: "M.Tech Renewable Energy", major: "Solar PV Cells", cgpa: "9.88", graduationDate: "2026-05-28", templateStyle: "pdeu-energy" }
+        ];
+        document.getElementById('batch-count-badge').textContent = `${this.batchStudents.length} Students`;
+        document.getElementById('batch-issue-submit-btn').disabled = false;
+        const tbody = document.getElementById('batch-students-tbody');
+        if (tbody) {
+          tbody.innerHTML = this.batchStudents.map(s => `
+            <tr><td class="font-mono text-gold">${s.certId}</td><td>${s.studentName}</td><td class="font-mono">${s.studentId}</td><td>${s.degree}</td><td><span class="badge bg-gold">${s.cgpa}</span></td><td>-</td></tr>
+          `).join('');
+        }
+      }
+      async submitBatch() {
+        const res = await window.contract.issueBatchCertificates(this.batchStudents, 'PDEU Class of 2026', this.currentInstitution);
+        this.batchStudents = [];
+        document.getElementById('batch-count-badge').textContent = '0 Students';
+        document.getElementById('batch-issue-submit-btn').disabled = true;
+        document.getElementById('batch-students-tbody').innerHTML = '<tr><td colspan="6" class="text-center py-3 text-muted">Batch notarized on-chain!</td></tr>';
+        this.updateHeader();
+        this.renderTable();
+        document.getElementById('merkle-modal-name').textContent = res.batch.batchName;
+        document.getElementById('merkle-modal-root').textContent = res.batch.merkleRoot;
+        document.getElementById('merkle-modal-tx').textContent = res.batch.txHash;
+        document.getElementById('merkle-modal-block').textContent = res.batch.blockNumber;
+        document.getElementById('merkle-modal-count').textContent = res.batch.totalCertificates;
+        document.getElementById('merkle-modal-leaves-list').innerHTML = res.certificates.map(c => `
+          <div class="p-2 border border-secondary rounded mb-2 font-mono text-xs"><strong>${c.studentName}</strong> (${c.certId}) - Leaf: ${c.certHash}</div>
+        `).join('');
+        document.getElementById('merkle-batch-modal').classList.add('active');
+      }
+      renderTable() {
+        const tbody = document.getElementById('issuer-certs-tbody');
+        if (!tbody) return;
+        const search = document.getElementById('issuer-cert-search')?.value.toLowerCase() || '';
+        const certs = window.contract.getAllCertificates().filter(c => c.issuerAddress.toLowerCase() === this.currentInstitution.address.toLowerCase());
+        const filtered = certs.filter(c => c.studentName.toLowerCase().includes(search) || c.certId.toLowerCase().includes(search) || c.degree.toLowerCase().includes(search));
+        if (!filtered.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-3 text-muted">No certificates found.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = filtered.map(c => `
+          <tr class="${c.isRevoked ? 'table-row-revoked' : ''}">
+            <td class="font-mono text-gold font-semibold">${c.certId}</td>
+            <td><strong>${c.studentName}</strong><br><small class="text-muted">${c.studentId}</small></td>
+            <td>${c.degree}</td>
+            <td><span class="badge bg-purple font-mono">#${c.blockNumber !== undefined ? c.blockNumber : 1}</span></td>
+            <td>${c.isRevoked ? '<span class="badge badge-revoked">REVOKED</span>' : '<span class="badge badge-valid">ACTIVE</span>'}</td>
+            <td class="font-mono text-xs text-muted">${c.certHash.substring(0, 10)}...</td>
+            <td>
+              <button class="btn-action-sm" onclick="window.issuerModule.preview('${c.certHash}')">👁️</button>
+              ${!c.isRevoked ? `<button class="btn-action-sm btn-action-revoke" onclick="window.issuerModule.openRevoke('${c.certHash}')">🚫</button>` : ''}
+            </td>
+          </tr>
+        `).join('');
+      }
+      preview(hash) {
+        const cert = window.contract.certificatesByHash[hash.toLowerCase()];
+        if (!cert) return;
+        CertificatePdfGenerator.renderCertificateHTML(cert, this.currentInstitution, document.getElementById('cert-view-modal-body'));
+        document.getElementById('cert-view-modal').classList.add('active');
+      }
+      openRevoke(hash) {
+        this.pendingRevoke = hash;
+        const cert = window.contract.certificatesByHash[hash.toLowerCase()];
+        document.getElementById('revoke-target-id').textContent = cert.certId;
+        document.getElementById('revoke-target-name').textContent = cert.studentName;
+        document.getElementById('revoke-cert-modal').classList.add('active');
+      }
+      async confirmRevoke() {
+        if (!this.pendingRevoke) return;
+        const reason = document.getElementById('revoke-reason-input').value.trim() || 'PDEU University Revocation';
+        await window.contract.revokeCertificate(this.pendingRevoke, reason, this.currentInstitution.address);
+        document.getElementById('revoke-cert-modal').classList.remove('active');
+        this.renderTable();
+        this.updateHeader();
+      }
+    }
+
+    /* --- Student Module --- */
+    class StudentModule {
+      constructor() {
+        this.currentStudentId = 'PDEU-21BCE042';
+        this.init();
+      }
+      init() {
+        const select = document.getElementById('student-profile-select');
+        if (select) {
+          const certs = window.contract.getAllCertificates();
+          select.innerHTML = certs.map(c => `<option value="${c.studentId}" ${c.studentId === this.currentStudentId ? 'selected' : ''}>🎓 ${c.studentName} (${c.studentId})</option>`).join('');
+          select.addEventListener('change', (e) => {
+            this.currentStudentId = e.target.value;
+            this.render();
+          });
+        }
+        this.render();
+      }
+      render() {
+        const certs = window.contract.getAllCertificates().filter(c => c.studentId.toLowerCase() === this.currentStudentId.toLowerCase() || c.studentName.toLowerCase().includes(this.currentStudentId.toLowerCase()));
+        const container = document.getElementById('student-credentials-grid');
+        if (certs.length) {
+          document.getElementById('student-passport-name').textContent = certs[0].studentName;
+          document.getElementById('student-passport-id').textContent = certs[0].studentId;
+          document.getElementById('student-passport-did').textContent = `did:student:pdeu:${certs[0].studentId.toLowerCase()}`;
+        }
+        document.getElementById('student-credentials-count').textContent = `${certs.length} Verified Credential${certs.length !== 1 ? 's' : ''}`;
+        if (!container) return;
+        container.innerHTML = certs.map(cert => {
+          const isRevoked = cert.isRevoked;
+          return `
+            <div class="col-md-6 mb-4">
+              <div class="credential-card ${isRevoked ? 'credential-card-revoked' : ''}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fs-2">⚡</span>
+                    <div><h5 class="text-white m-0">${cert.degree}</h5><small class="text-gold">${cert.major}</small></div>
+                  </div>
+                  <span class="badge ${isRevoked ? 'badge-revoked' : 'badge-valid'}">${isRevoked ? 'REVOKED' : 'VERIFIED'}</span>
+                </div>
+                <div class="cred-meta-row"><span class="meta-label">CGPA</span><span class="text-gold font-bold">${cert.cgpa}</span></div>
+                <div class="cred-meta-row"><span class="meta-label">Serial ID</span><span class="font-mono text-cyan">${cert.certId}</span></div>
+                <div class="cred-blockchain-proof-box">
+                  <div class="font-mono text-xs text-muted">SHA-256: ${cert.certHash.substring(0, 16)}...</div>
+                  <div class="font-mono text-xs text-gold">TX: ${cert.txHash ? cert.txHash.substring(0, 14) + '...' : '0xGenesis'} (Block #${cert.blockNumber !== undefined ? cert.blockNumber : 1})</div>
+                </div>
+                <div class="cred-actions-grid mt-3">
+                  <button class="btn btn-gold-glass btn-sm" onclick="window.studentModule.viewCertificate('${cert.certHash}')">👁️ View</button>
+                  <button class="btn btn-outline-glass btn-sm" onclick="window.studentModule.downloadPdf('${cert.certHash}')">📥 PDF</button>
+                  <button class="btn btn-outline-glass btn-sm" onclick="window.studentModule.copyShareLink('${cert.certHash}')">🔗 Link</button>
+                  <button class="btn btn-outline-glass btn-sm" onclick="window.studentModule.exportVCJson('${cert.certHash}')">📜 JSON</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      viewCertificate(hash) {
+        const cert = window.contract.certificatesByHash[hash.toLowerCase()];
+        if (!cert) return;
+        CertificatePdfGenerator.renderCertificateHTML(cert, window.contract.getInstitution(cert.issuerAddress), document.getElementById('cert-view-modal-body'));
+        document.getElementById('cert-view-modal').classList.add('active');
+      }
+      downloadPdf(hash) {
+        const cert = window.contract.certificatesByHash[hash.toLowerCase()];
+        if (!cert) return;
+        CertificatePdfGenerator.downloadCertificatePdf(cert, window.contract.getInstitution(cert.issuerAddress));
+      }
+      copyShareLink(hash) {
+        const url = `${window.location.origin}${window.location.pathname}#verify=${encodeURIComponent(hash)}`;
+        navigator.clipboard.writeText(url).then(() => alert('Verification Link Copied: ' + url)).catch(() => prompt('Verification Link:', url));
+      }
+      exportVCJson(hash) {
+        const cert = window.contract.certificatesByHash[hash.toLowerCase()];
+        if (!cert) return;
+        const json = SignatureEngine.formatVerifiableCredential(cert, cert.signature, window.contract.getInstitution(cert.issuerAddress));
+        const blob = new Blob([JSON.stringify(json, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${cert.studentName}_${cert.certId}_Credential.json`;
+        a.click();
+      }
+    }
+
+    /* --- Explorer Module --- */
+    class ExplorerModule {
+      constructor() { this.init(); }
+      init() {
+        this.update();
+        document.getElementById('explorer-search-form')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const q = document.getElementById('explorer-search-input').value.trim();
+          if (q) this.search(q);
+        });
+        document.getElementById('reset-chain-btn')?.addEventListener('click', () => window.blockchain.resetToDemo());
+        document.getElementById('validate-chain-btn')?.addEventListener('click', () => {
+          const res = window.blockchain.validateChain();
+          document.getElementById('chain-integrity-result').innerHTML = res.valid ? '<span class="text-emerald">✓ All blocks valid. Zero tampering.</span>' : '<span class="text-danger">❌ Chain error</span>';
+        });
+        document.querySelectorAll('.explorer-subnav-btn').forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll('.explorer-subnav-btn').forEach(btn => btn.classList.toggle('active', btn === b));
+            document.querySelectorAll('.explorer-subpane').forEach(p => p.style.display = (p.id === b.dataset.target.replace('#', '') ? 'block' : 'none'));
+          });
+        });
+        window.blockchain.onBlockMined(() => this.update());
+      }
+      update() {
+        const chain = window.blockchain.chain;
+        document.getElementById('explorer-metric-blocks').textContent = chain.length;
+        document.getElementById('explorer-metric-txs').textContent = chain.reduce((a, b) => a + b.transactions.length, 0);
+        document.getElementById('explorer-metric-certs').textContent = Object.keys(window.contract.certificatesByHash).length;
+        const container = document.getElementById('explorer-blocks-container');
+        if (container) {
+          container.innerHTML = [...chain].reverse().map(b => `
+            <div class="block-card" onclick="alert('Block #' + ${b.index} + ' Hash: ' + '${b.hash}')">
+              <div class="block-card-header"><span class="block-num">Block #${b.index}</span><small class="text-muted">${new Date(b.timestamp).toLocaleTimeString()}</small></div>
+              <div class="block-meta-row"><span>Transactions</span><span class="badge bg-gold">${b.transactions.length} Tx</span></div>
+              <div class="block-hash-preview"><span class="font-mono text-cyan text-xs">${b.hash.substring(0, 16)}...</span></div>
+            </div>
+          `).join('');
+        }
+        const tbody = document.getElementById('explorer-events-tbody');
+        if (tbody) {
+          tbody.innerHTML = window.contract.events.map(ev => `
+            <tr><td><span class="badge bg-gold">${ev.event}</span></td><td class="font-mono text-xs text-cyan">${ev.txHash ? ev.txHash.substring(0, 12) + '...' : '-'}</td><td>#${ev.blockNumber !== undefined ? ev.blockNumber : '-'}</td><td>${ev.studentName || ev.certId || '-'}</td><td>${new Date(ev.timestamp).toLocaleTimeString()}</td></tr>
+          `).join('');
+        }
+      }
+      search(q) {
+        if (window.contract.certificatesByHash[q.toLowerCase()] || window.contract.certIdToHash[q.toUpperCase()]) {
+          window.app.switchTab('verifier');
+          window.verifierModule.verifyByHash(q);
+        } else {
+          alert('No record found for: ' + q);
+        }
+      }
+    }
+
+    /* --- App Controller --- */
+    class CertiChainApp {
+      constructor() { this.init(); }
+      init() {
+        document.querySelectorAll('.nav-tab-item').forEach(item => {
+          item.addEventListener('click', () => this.switchTab(item.dataset.tab));
+        });
+        document.querySelectorAll('.modal-close-btn, .modal-backdrop-dismiss').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const m = e.target.closest('.custom-modal');
+            if (m) m.classList.remove('active');
+          });
+        });
+        document.getElementById('connect-wallet-btn')?.addEventListener('click', () => {
+          const btn = document.getElementById('connect-wallet-btn');
+          btn.innerHTML = '🟢 0x78D6...2084 (PDEU Sovereign Node)';
+          btn.style.borderColor = '#10b981';
+          alert('Connected to PDEU Sovereign Blockchain Node!');
+        });
+        window.verifierModule = new VerifierModule();
+        window.issuerModule = new IssuerModule();
+        window.studentModule = new StudentModule();
+        window.explorerModule = new ExplorerModule();
+        window.blockchain.onBlockMined((b) => {
+          document.getElementById('header-block-height').textContent = `Block #${b.index}`;
+        });
+        document.getElementById('header-block-height').textContent = `Block #${window.blockchain.chain.length - 1}`;
+      }
+      switchTab(tabName) {
+        document.querySelectorAll('.nav-tab-item').forEach(i => i.classList.toggle('active', i.dataset.tab === tabName));
+        document.querySelectorAll('.app-tab-pane').forEach(p => p.classList.toggle('active', p.id === `tab-${tabName}`));
+        if (tabName === 'issuer' && window.issuerModule) window.issuerModule.renderTable();
+        if (tabName === 'student' && window.studentModule) window.studentModule.render();
+        if (tabName === 'explorer' && window.explorerModule) window.explorerModule.update();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      window.app = new CertiChainApp();
+    });
+  </script>
+</body>
+</html>
